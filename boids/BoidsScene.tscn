@@ -1,0 +1,182 @@
+[gd_scene load_steps=19 format=2]
+
+[ext_resource path="res://boids/radial_gradient.png" type="Texture" id=1]
+[ext_resource path="res://boids/VP_State.gd" type="Script" id=2]
+[ext_resource path="res://boids/GridMultiMesh.gd" type="Script" id=3]
+[ext_resource path="res://boids/BoidsScene.gd" type="Script" id=4]
+[ext_resource path="res://boids/GridShader.gdshader" type="Shader" id=5]
+[ext_resource path="res://boids/CopyShader.gdshader" type="Shader" id=6]
+
+[sub_resource type="ViewportTexture" id=8]
+viewport_path = NodePath("Container/VPC_State/VP_State")
+
+[sub_resource type="ShaderMaterial" id=7]
+resource_local_to_scene = true
+shader = ExtResource( 5 )
+shader_param/state_texture = SubResource( 8 )
+
+[sub_resource type="QuadMesh" id=2]
+size = Vector2( 32, 32 )
+
+[sub_resource type="MultiMesh" id=3]
+custom_data_format = 2
+mesh = SubResource( 2 )
+
+[sub_resource type="ViewportTexture" id=4]
+viewport_path = NodePath("Container/VPC_State/VP_State")
+
+[sub_resource type="GDScript" id=9]
+script/source = "extends ViewportContainer
+
+func _input(event):
+    var mouse := event as InputEventMouseMotion
+    if mouse:
+        mouse = make_input_local(mouse)
+        var pos := mouse.position / stretch_shrink
+        var x := int(pos.x)
+        var y := int(pos.y)
+        if Rect2(Vector2(0,0), $VP_State.size).has_point(pos):
+            $Cursor_Label.visible = true
+            $Cursor_Label.rect_position = mouse.position - Vector2(0, $Cursor_Label.rect_size.y)
+            $Cursor_Label.text = \"X,Y=\" +  str(x) + \",\" + str(y)
+            
+            var image : Image = $VP_State.get_texture().get_data()
+            $Cursor_Label.text += \"\\nU,V=\" +  str(pos.x / image.get_width()) + \",\" + str(1.0 - pos.y / image.get_height())
+            
+            image.lock()
+            var pixel := image.get_pixel(x, image.get_height() - y - 1)
+            image.unlock()
+            $Cursor_Label.text += \"\\nR=\" + str(pixel.r)
+            $Cursor_Label.text += \"\\nG=\" + str(pixel.g)
+            $Cursor_Label.text += \"\\nB=\" + str(pixel.b)
+            $Cursor_Label.text += \"\\nA=\" + str(pixel.a)
+            
+        else:
+            $Cursor_Label.visible = false
+    
+"
+
+[sub_resource type="ShaderMaterial" id=14]
+shader = ExtResource( 6 )
+
+[sub_resource type="ViewportTexture" id=5]
+viewport_path = NodePath("Container/VPC_Copy/VP_Copy")
+
+[sub_resource type="Shader" id=10]
+code = "shader_type canvas_item;
+render_mode blend_add, blend_premul_alpha;
+"
+
+[sub_resource type="ShaderMaterial" id=11]
+shader = SubResource( 10 )
+
+[sub_resource type="ShaderMaterial" id=13]
+shader = ExtResource( 6 )
+
+[sub_resource type="ViewportTexture" id=1]
+viewport_path = NodePath("Container/VPC_State/VP_State")
+
+[node name="BoidsScene" type="MarginContainer"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource( 4 )
+
+[node name="Container" type="VBoxContainer" parent="."]
+margin_right = 40.0
+margin_bottom = 62.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label_Grid" type="Label" parent="Container"]
+margin_right = 40.0
+margin_bottom = 14.0
+rect_min_size = Vector2( 0, 10 )
+size_flags_horizontal = 3
+text = "Grid: "
+
+[node name="VPC_Grid" type="ViewportContainer" parent="Container"]
+margin_top = 18.0
+margin_right = 40.0
+margin_bottom = 18.0
+mouse_default_cursor_shape = 3
+
+[node name="VP_Grid" type="Viewport" parent="Container/VPC_Grid"]
+handle_input_locally = false
+disable_3d = true
+usage = 1
+render_target_update_mode = 3
+
+[node name="GridMultiMesh" type="MultiMeshInstance2D" parent="Container/VPC_Grid/VP_Grid"]
+material = SubResource( 7 )
+multimesh = SubResource( 3 )
+texture = ExtResource( 1 )
+script = ExtResource( 3 )
+state_texture = SubResource( 4 )
+
+[node name="Label_State" type="Label" parent="Container"]
+margin_top = 22.0
+margin_right = 40.0
+margin_bottom = 36.0
+rect_min_size = Vector2( 0, 10 )
+size_flags_horizontal = 3
+text = "State: "
+
+[node name="VPC_State" type="ViewportContainer" parent="Container"]
+margin_top = 40.0
+margin_right = 40.0
+margin_bottom = 40.0
+stretch = true
+stretch_shrink = 5
+script = SubResource( 9 )
+
+[node name="Cursor_Label" type="Label" parent="Container/VPC_State"]
+margin_right = 40.0
+margin_bottom = 14.0
+
+[node name="VP_State" type="Viewport" parent="Container/VPC_State"]
+size = Vector2( 8, 0 )
+transparent_bg = true
+handle_input_locally = false
+disable_3d = true
+usage = 1
+render_target_update_mode = 3
+script = ExtResource( 2 )
+
+[node name="Sprite" type="Sprite" parent="Container/VPC_State/VP_State"]
+material = SubResource( 14 )
+texture = SubResource( 5 )
+centered = false
+
+[node name="Cursor" type="Sprite" parent="Container/VPC_State/VP_State"]
+material = SubResource( 11 )
+centered = false
+
+[node name="Label_Copy" type="Label" parent="Container"]
+margin_top = 44.0
+margin_right = 40.0
+margin_bottom = 58.0
+rect_min_size = Vector2( 0, 10 )
+size_flags_horizontal = 3
+text = "Copy: "
+
+[node name="VPC_Copy" type="ViewportContainer" parent="Container"]
+margin_top = 62.0
+margin_right = 40.0
+margin_bottom = 62.0
+stretch = true
+stretch_shrink = 5
+
+[node name="VP_Copy" type="Viewport" parent="Container/VPC_Copy"]
+size = Vector2( 8, 0 )
+transparent_bg = true
+handle_input_locally = false
+disable_3d = true
+usage = 1
+render_target_update_mode = 3
+
+[node name="Sprite" type="Sprite" parent="Container/VPC_Copy/VP_Copy"]
+material = SubResource( 13 )
+texture = SubResource( 1 )
+centered = false
+
+[connection signal="boid_added" from="Container/VPC_State/VP_State" to="Container/VPC_Grid/VP_Grid/GridMultiMesh" method="_on_VP_State_boid_added"]
