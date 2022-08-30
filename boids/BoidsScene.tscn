@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=2]
+[gd_scene load_steps=23 format=2]
 
 [ext_resource path="res://boids/radial_gradient.png" type="Texture" id=1]
 [ext_resource path="res://boids/VP_State.gd" type="Script" id=2]
@@ -20,7 +20,7 @@ script/source = "extends ViewportContainer
 signal clicked(position)
 
 func _draw():
-    draw_rect(Rect2(Vector2(0,0), rect_size), Color(1,0,0,1), false, 2.0)
+    draw_rect(Rect2(Vector2(0,0), rect_size), Color(1,1,1,1), false, 1.0)
 
 func _input(event):
     var mouse_event := event as InputEventMouseButton
@@ -50,6 +50,9 @@ viewport_path = NodePath("Container/VPC_State/VP_State")
 
 [sub_resource type="GDScript" id=9]
 script/source = "extends ViewportContainer
+
+func _draw():
+    draw_rect(Rect2(Vector2(0,0), rect_size), Color(1,1,1,1), false, 1.0)
 
 func _input(event):
     var mouse := event as InputEventMouseMotion
@@ -92,6 +95,13 @@ render_mode blend_add, blend_premul_alpha;
 
 [sub_resource type="ShaderMaterial" id=11]
 shader = SubResource( 10 )
+
+[sub_resource type="GDScript" id=17]
+script/source = "extends ViewportContainer
+
+func _draw():
+    draw_rect(Rect2(Vector2(0,0), rect_size), Color(1,1,1,1), false, 1.0)
+"
 
 [sub_resource type="ShaderMaterial" id=13]
 shader = ExtResource( 6 )
@@ -195,6 +205,7 @@ margin_bottom = 70.0
 size_flags_horizontal = 0
 stretch = true
 stretch_shrink = 5
+script = SubResource( 17 )
 
 [node name="VP_Copy" type="Viewport" parent="Container/VPC_Copy"]
 size = Vector2( 2, 2 )

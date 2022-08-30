@@ -15,5 +15,6 @@ vec2 rgba_to_vector2(in vec4 color)
 }
 
 void vertex() {
-    VERTEX += rgba_to_vector2(texture(state_texture, INSTANCE_CUSTOM.xy));
+    //VERTEX += rgba_to_vector2(texture(state_texture, INSTANCE_CUSTOM.xy));
+    VERTEX += texture(state_texture, INSTANCE_CUSTOM.xy).xz * 255.0;
 }
