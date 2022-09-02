@@ -16,3 +16,8 @@ vec2 rgba_to_grid(in vec4 color)
 void vertex() {
     VERTEX += rgba_to_grid(texture(state_texture, INSTANCE_CUSTOM.xy));
 }
+
+void fragment(){
+    COLOR = texture(TEXTURE, UV);
+    COLOR.a = pow(COLOR.a, 1.0);
+}

@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=2]
+[gd_scene load_steps=26 format=2]
 
 [ext_resource path="res://boids/radial_gradient.png" type="Texture" id=1]
 [ext_resource path="res://boids/VP_State.gd" type="Script" id=2]
@@ -11,10 +11,10 @@
 
 [sub_resource type="Resource" id=15]
 script = ExtResource( 7 )
-world_size = Vector2( 200, 200 )
-grid_resolution = 2.0
+world_size = Vector2( 100, 100 )
+grid_resolution = 4.0
 boids_capacity = 10000
-boids_vision = 10.0
+boids_vision = 5.0
 
 [sub_resource type="GDScript" id=16]
 script/source = "extends ViewportContainer
@@ -86,13 +86,20 @@ func _input(event):
     
 "
 
+[sub_resource type="ViewportTexture" id=19]
+viewport_path = NodePath("Container/VPC_Grid/VP_Grid")
+
 [sub_resource type="ShaderMaterial" id=14]
+resource_local_to_scene = true
 shader = ExtResource( 8 )
 shader_param/world_size = null
+shader_param/grid_size = null
 shader_param/delta_time = 0.0
-shader_param/rule_seperation = 1.0
+shader_param/boids_vision = null
+shader_param/rule_seperation = 10.0
 shader_param/rule_coherence = 1.0
 shader_param/rule_alignment = 1.0
+shader_param/grid_texture = SubResource( 19 )
 
 [sub_resource type="ViewportTexture" id=5]
 viewport_path = NodePath("Container/VPC_Copy/VP_Copy")
@@ -106,7 +113,12 @@ var _do_one_step := false
 
 func setup(boids_spec : BoidsSpec):
     _spec = boids_spec
-    (material as ShaderMaterial).set_shader_param(\"world_size\", _spec.world_size)
+    var shader := (material as ShaderMaterial)
+    
+    shader.set_shader_param(\"world_size\", _spec.world_size)
+    shader.set_shader_param(\"grid_size\", _spec.grid_size)
+    shader.set_shader_param(\"world_size\", _spec.world_size)
+    shader.set_shader_param(\"boids_vision\", _spec.boids_vision)
 
 func _process(delta):
     (material as ShaderMaterial).set_shader_param(\"delta_time\", delta)
@@ -171,6 +183,7 @@ script = SubResource( 16 )
 
 [node name="VP_Grid" type="Viewport" parent="Container/VPC_Grid"]
 size = Vector2( 8, 8 )
+transparent_bg = true
 handle_input_locally = false
 hdr = false
 disable_3d = true

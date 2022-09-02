@@ -25,7 +25,7 @@ func _ready():
     $Container/VPC_Copy/VP_Copy.size = _state_text_size
 
 func add_boid(position : Vector2):
-    $Container/VPC_State/VP_State.add_boid(position / boids_spec.grid_resolution, 100, Vector2(20,20))
+    $Container/VPC_State/VP_State.add_boid(position / boids_spec.grid_resolution, 20, Vector2(20,20))
 
 func _process(delta):
     rect_min_size = get_viewport().size

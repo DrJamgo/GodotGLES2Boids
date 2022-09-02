@@ -15,6 +15,7 @@ func setup(boids_spec : BoidsSpec):
         multimesh.set_instance_transform_2d(index, Transform2D.IDENTITY)
     
     (material as ShaderMaterial).set_shader_param("grid_size", boids_spec.grid_size)
+    (material as ShaderMaterial).set_shader_param("world_size", boids_spec.world_size)
 
 func _on_VP_State_boids_added(amount : int):
     multimesh.visible_instance_count += amount
