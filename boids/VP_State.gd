@@ -14,7 +14,7 @@ func add_boid(position : Vector2):
         position.x = clamp(position.x, 0.0, _spec.world_size.x)
         position.y = clamp(position.y, 0.0, _spec.world_size.y)
         
-        var color = _spec.Vector2_to_RGBA(position)
+        var color = _spec.world_to_rgba(position)
         
         var data : PoolByteArray
         data.append(color.r)
@@ -36,5 +36,5 @@ func add_boid(position : Vector2):
     
         emit_signal("boid_added")
     else:
-        push_error("Boids capacity (" + str(_spec.boids_capacity) + ") exceeded!")
+        push_error("Boids capacity (" + str(_spec.boids_capacity) + ") exceded!")
     

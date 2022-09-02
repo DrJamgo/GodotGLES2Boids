@@ -7,7 +7,8 @@ const _state_tex_height := 2
 func _ready():
     var _state_text_size = Vector2(boids_spec.boids_capacity, _state_tex_height)
     
-    $Container/Label_Grid.text += str(boids_spec.grid_size.x) + "x" + str(boids_spec.grid_size.y)
+    $Container/Label_Grid.text = "Grid: " + str(boids_spec.grid_size.x) + "x" + str(boids_spec.grid_size.y)
+    $Container/Label_Grid.text += "  World:" + str(boids_spec.world_size.x) + "x" + str(boids_spec.world_size.y)
     $Container/VPC_Grid.rect_min_size = boids_spec.grid_size * $Container/VPC_Grid.stretch_shrink
     $Container/VPC_Grid/VP_Grid.size = boids_spec.grid_size
     $Container/VPC_Grid/VP_Grid/GridMultiMesh.setup(boids_spec)
@@ -24,7 +25,7 @@ func _ready():
     $Container/VPC_Copy/VP_Copy.size = _state_text_size
 
 func add_boid(position : Vector2):
-    $Container/VPC_State/VP_State.add_boid(position)
+    $Container/VPC_State/VP_State.add_boid(position / boids_spec.grid_resolution)
 
 func _process(delta):
     rect_min_size = get_viewport().size

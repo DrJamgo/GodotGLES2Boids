@@ -11,8 +11,8 @@
 [sub_resource type="Resource" id=15]
 script = ExtResource( 7 )
 boids_capacity = 100
-grid_size = Vector2( 500, 500 )
-world_size = Vector2( 256, 256 )
+grid_resolution = 0.25
+world_size = Vector2( 800, 400 )
 
 [sub_resource type="GDScript" id=16]
 script/source = "extends ViewportContainer
@@ -35,7 +35,7 @@ viewport_path = NodePath("Container/VPC_State/VP_State")
 [sub_resource type="ShaderMaterial" id=7]
 resource_local_to_scene = true
 shader = ExtResource( 5 )
-shader_param/world_size = null
+shader_param/grid_size = null
 shader_param/state_texture = SubResource( 8 )
 
 [sub_resource type="QuadMesh" id=2]

@@ -2,12 +2,24 @@ extends Resource
 class_name BoidsSpec
 
 export var boids_capacity := 100
-export var grid_size := Vector2(500,500)
+export var grid_resolution := 1.0
 export var world_size := Vector2(256,256)
 
-const max_value = Vector2(255.0, 255.0) * Vector2(256.0, 256.0)
+var grid_size : Vector2 setget , _get_grid_size
 
-func Vector2_to_RGBA(vector : Vector2) -> Color:
+func _get_grid_size() -> Vector2:
+    grid_size = world_to_grid(world_size)
+    return grid_size
+
+const max_value = Vector2(255.0, 255.0) * Vector2(255.0, 255.0)
+
+func world_to_grid(world : Vector2) -> Vector2:
+    return world * grid_resolution
+    
+func grid_to_world(grid : Vector2) -> Vector2:
+    return grid / grid_resolution
+
+func world_to_rgba(vector : Vector2) -> Color:
     var color : Color
     vector *= (max_value / world_size).round();
     
@@ -17,7 +29,7 @@ func Vector2_to_RGBA(vector : Vector2) -> Color:
     color.a = int(vector.y) % 256
     return color
 
-func RGBA_to_Vector2(color : Color) -> Vector2:
+func rgba_to_world(color : Color) -> Vector2:
     var vector : Vector2
     vector.x = (color.r * 256.0 + color.g) * world_size.x / max_value.x
     vector.y = (color.b * 256.0 + color.a) * world_size.y / max_value.y
