@@ -24,14 +24,14 @@ func world_to_rgba(vector : Vector2) -> Color:
     var color : Color
     vector *= (max_value / world_size).round();
     
-    color.r = int(vector.x) / 256
-    color.g = int(vector.x) % 256
-    color.b = int(vector.y) / 256
-    color.a = int(vector.y) % 256
+    color.r = int(vector.x) / 255
+    color.g = int(vector.x) % 255
+    color.b = int(vector.y) / 255
+    color.a = int(vector.y) % 255
     return color
 
 func rgba_to_world(color : Color) -> Vector2:
     var vector : Vector2
-    vector.x = (color.r * 256.0 + color.g) * world_size.x / max_value.x
-    vector.y = (color.b * 256.0 + color.a) * world_size.y / max_value.y
+    vector.x = (color.r * 255.0 + color.g) * world_size.x / max_value.x
+    vector.y = (color.b * 255.0 + color.a) * world_size.y / max_value.y
     return vector

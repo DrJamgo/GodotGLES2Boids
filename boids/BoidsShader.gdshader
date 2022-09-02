@@ -11,7 +11,7 @@ uniform float delta_time = 0.0;
 vec2 rgba_to_world(in vec4 color)
 {
     vec2 vector;
-    vector = color.rb + color.ga / 256.0;
+    vector = color.rb + color.ga / 255.0;
     vector *= world_size;
     return vector;
 }
@@ -19,12 +19,12 @@ vec2 rgba_to_world(in vec4 color)
 vec4 world_to_rgba(in vec2 world)
 {
     vec4 color;
-    world = round(world / world_size * 256.0 * 255.0);
+    world = round(world / world_size * 255.0 * 255.0);
     
-    color.r = floor(world.x / 256.0) / 255.0;
-    color.g = mod(world.x,  256.0) / 255.0;
-    color.b = floor(world.y / 256.0) / 255.0;
-    color.a = mod(world.y, 256.0) / 255.0;
+    color.r = floor(world.x / 255.0) / 255.0;
+    color.g = mod(world.x,  255.0) / 255.0;
+    color.b = floor(world.y / 255.0) / 255.0;
+    color.a = mod(world.y, 255.0) / 255.0;
     return color;
 }
 
