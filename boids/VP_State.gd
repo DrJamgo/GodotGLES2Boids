@@ -18,6 +18,9 @@ func setup(boids_spec : BoidsSpec):
     _spec = boids_spec
     $BoidsProcesor.setup(boids_spec)
 
+func set_target(position : Vector2):
+    $BoidsProcesor.set_target(position)
+
 func add_boid(position : Vector2, amount : int, spread : Vector2):
     
     var boids_to_add = min(_spec.boids_capacity - $Cursor.offset.x, amount)

@@ -13,6 +13,8 @@ uniform float boids_vision;
 uniform float rule_seperation = 20.0;
 uniform float rule_coherence = 5.0;
 uniform float rule_alignment = 1.0;
+uniform float rule_target = 1.0;
+uniform vec3  target = vec3(0,0,0); // active if Z > 0
 
 uniform float speed_min = 20.0;
 uniform float speed_max = 50.0;
@@ -93,6 +95,7 @@ void fragment() {
                     vec2 dir = vec2(cos(angle), sin(angle)) * radius * boids_vision;
                     vec4 rgba = texture(grid_texture, world_to_grid(pos + dir));
                     float alpha =  (rgba.b - 0.5);
+                    
                     gradient += normalize(dir) / pow(radius, 2.0) * alpha;
                     heading += rg_to_speed(rgba.rg);
                     if(alpha > max_value) {
@@ -109,6 +112,9 @@ void fragment() {
             speed = -gradient * rule_seperation;
             speed += density * rule_coherence;
             speed += heading * rule_alignment;
+            if(target.z > 0.0) {
+                speed += normalize(target.xy - pos) * rule_target;
+            }
             
             // check speed limits
             float speed_abs = length(speed);

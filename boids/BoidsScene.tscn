@@ -20,17 +20,25 @@ boids_vision = 10.0
 [sub_resource type="GDScript" id=16]
 script/source = "extends ViewportContainer
 
-signal clicked(position)
+signal clicked(position, index)
 
 func _draw():
     draw_rect(Rect2(Vector2(0,0), rect_size), Color(1,1,1,1), false, 1.0)
 
 func _input(event):
-    var mouse_event := event as InputEventMouseButton
-    if mouse_event and mouse_event.pressed:
-        if(get_rect().has_point(mouse_event.position)):
-            mouse_event = make_input_local(mouse_event)
-            emit_signal(\"clicked\", mouse_event.position)
+    if(get_rect().has_point(event.position)):
+        var button_event := event as InputEventMouseButton
+        if button_event and button_event.pressed:
+            button_event = make_input_local(button_event)
+            emit_signal(\"clicked\", button_event.position, button_event.button_index)
+
+func set_target(position : Vector2):
+    if position:
+        $TargetSprite.position = position
+        $TargetSprite.visible = true
+    else:
+        $TargetSprite.visible = false
+    
 "
 
 [sub_resource type="ViewportTexture" id=8]
@@ -100,6 +108,8 @@ shader_param/boids_vision = null
 shader_param/rule_seperation = 10.0
 shader_param/rule_coherence = 5.0
 shader_param/rule_alignment = 1.0
+shader_param/rule_target = 1.0
+shader_param/target = Vector3( 0, 0, 0 )
 shader_param/speed_min = 20.0
 shader_param/speed_max = 50.0
 shader_param/grid_texture = SubResource( 19 )
@@ -123,6 +133,13 @@ func setup(boids_spec : BoidsSpec):
     shader.set_shader_param(\"world_size\", _spec.world_size)
     shader.set_shader_param(\"boids_vision\", _spec.boids_vision)
     shader.set_shader_param(\"speed_max\", _spec.speed_max)
+
+func set_target(position : Vector2):
+    var shader := (material as ShaderMaterial)
+    if position:
+        shader.set_shader_param(\"target\", Vector3(position.x, position.y, 1.0))
+    else:
+        shader.set_shader_param(\"target\", Vector3(0,0,0))
 
 func _process(delta):
     (material as ShaderMaterial).set_shader_param(\"delta_time\", delta)
@@ -287,5 +304,6 @@ material = SubResource( 13 )
 texture = SubResource( 1 )
 centered = false
 
+[connection signal="clicked" from="Container/VPC_Grid" to="." method="_on_VPC_Grid_clicked"]
 [connection signal="pressed" from="Container/ButtonStep" to="Container/VPC_State/VP_State/BoidsProcesor" method="_on_ButtonStep_pressed"]
 [connection signal="boids_added" from="Container/VPC_State/VP_State" to="Container/VPC_Grid/VP_Grid/GridMultiMesh" method="_on_VP_State_boids_added"]

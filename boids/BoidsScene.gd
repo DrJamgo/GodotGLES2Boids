@@ -30,9 +30,19 @@ func _ready():
 func _update_labels():
     $Container/Label_Boids.text = "Boids: " + str($Container/VPC_State/VP_State.num_boids) + "/" + str(boids_spec.boids_capacity)
 
-func add_boid(position : Vector2):
-    $Container/VPC_State/VP_State.add_boid(position / boids_spec.grid_resolution, 20, Vector2(20,20))
-
 func _process(delta):
     rect_min_size = get_viewport().size
     _update_labels()
+
+func set_target(position):
+    $Container/VPC_State/VP_State.set_target(position / boids_spec.grid_resolution)
+
+func add_boid(position : Vector2):
+    $Container/VPC_State/VP_State.add_boid(position / boids_spec.grid_resolution, 20, Vector2(20,20))
+
+func _on_VPC_Grid_clicked(position, index):
+    if index == BUTTON_LEFT:
+        add_boid(position)
+    else:
+        set_target(position)
+        
