@@ -11,6 +11,7 @@ func _ready():
     $Container/Label_Grid.text += "  World:" + str(boids_spec.world_size.x) + "x" + str(boids_spec.world_size.y)
     $Container/VPC_Grid.rect_min_size = boids_spec.grid_size * $Container/VPC_Grid.stretch_shrink
     $Container/VPC_Grid/VP_Grid.size = boids_spec.grid_size
+    $Container/VPC_Grid/VP_Grid/ColorRect.rect_min_size = boids_spec.grid_size
     $Container/VPC_Grid/VP_Grid/GridMultiMesh.setup(boids_spec)
     
     $Container/VPC_Grid.connect("clicked", self, "add_boid")
@@ -23,9 +24,15 @@ func _ready():
     $Container/Label_Copy.text += str(_state_text_size.x) + "x" + str(_state_text_size.y)
     $Container/VPC_Copy.rect_min_size = _state_text_size * $Container/VPC_Copy.stretch_shrink
     $Container/VPC_Copy/VP_Copy.size = _state_text_size
+    
+    _update_labels()
+
+func _update_labels():
+    $Container/Label_Boids.text = "Boids: " + str($Container/VPC_State/VP_State.num_boids) + "/" + str(boids_spec.boids_capacity)
 
 func add_boid(position : Vector2):
     $Container/VPC_State/VP_State.add_boid(position / boids_spec.grid_resolution, 20, Vector2(20,20))
 
 func _process(delta):
     rect_min_size = get_viewport().size
+    _update_labels()

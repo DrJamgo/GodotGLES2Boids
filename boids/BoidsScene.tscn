@@ -11,10 +11,11 @@
 
 [sub_resource type="Resource" id=15]
 script = ExtResource( 7 )
-world_size = Vector2( 100, 100 )
+world_size = Vector2( 200, 200 )
+speed_max = 100.0
 grid_resolution = 4.0
 boids_capacity = 10000
-boids_vision = 5.0
+boids_vision = 10.0
 
 [sub_resource type="GDScript" id=16]
 script/source = "extends ViewportContainer
@@ -97,8 +98,10 @@ shader_param/grid_size = null
 shader_param/delta_time = 0.0
 shader_param/boids_vision = null
 shader_param/rule_seperation = 10.0
-shader_param/rule_coherence = 1.0
+shader_param/rule_coherence = 5.0
 shader_param/rule_alignment = 1.0
+shader_param/speed_min = 20.0
+shader_param/speed_max = 50.0
 shader_param/grid_texture = SubResource( 19 )
 
 [sub_resource type="ViewportTexture" id=5]
@@ -119,6 +122,7 @@ func setup(boids_spec : BoidsSpec):
     shader.set_shader_param(\"grid_size\", _spec.grid_size)
     shader.set_shader_param(\"world_size\", _spec.world_size)
     shader.set_shader_param(\"boids_vision\", _spec.boids_vision)
+    shader.set_shader_param(\"speed_max\", _spec.speed_max)
 
 func _process(delta):
     (material as ShaderMaterial).set_shader_param(\"delta_time\", delta)
@@ -161,21 +165,26 @@ boids_spec = SubResource( 15 )
 
 [node name="Container" type="VBoxContainer" parent="."]
 margin_right = 41.0
-margin_bottom = 94.0
+margin_bottom = 112.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Label_Grid" type="Label" parent="Container"]
+[node name="Label_Boids" type="Label" parent="Container"]
 margin_right = 41.0
 margin_bottom = 14.0
+
+[node name="Label_Grid" type="Label" parent="Container"]
+margin_top = 18.0
+margin_right = 41.0
+margin_bottom = 32.0
 rect_min_size = Vector2( 0, 10 )
 size_flags_horizontal = 3
 text = "Grid: "
 
 [node name="VPC_Grid" type="ViewportContainer" parent="Container"]
-margin_top = 18.0
+margin_top = 36.0
 margin_right = 8.0
-margin_bottom = 26.0
+margin_bottom = 44.0
 mouse_default_cursor_shape = 3
 size_flags_horizontal = 0
 size_flags_vertical = 0
@@ -190,6 +199,11 @@ disable_3d = true
 usage = 1
 render_target_update_mode = 3
 
+[node name="ColorRect" type="ColorRect" parent="Container/VPC_Grid/VP_Grid"]
+margin_right = 40.0
+margin_bottom = 40.0
+color = Color( 0.501961, 0.501961, 0.501961, 1 )
+
 [node name="GridMultiMesh" type="MultiMeshInstance2D" parent="Container/VPC_Grid/VP_Grid"]
 material = SubResource( 7 )
 multimesh = SubResource( 3 )
@@ -198,22 +212,22 @@ script = ExtResource( 3 )
 state_texture = SubResource( 4 )
 
 [node name="ButtonStep" type="Button" parent="Container"]
-margin_top = 30.0
+margin_top = 48.0
 margin_right = 41.0
-margin_bottom = 50.0
+margin_bottom = 68.0
 text = "STEP"
 
 [node name="Label_State" type="Label" parent="Container"]
-margin_top = 54.0
+margin_top = 72.0
 margin_right = 41.0
-margin_bottom = 68.0
+margin_bottom = 86.0
 rect_min_size = Vector2( 0, 10 )
 size_flags_horizontal = 3
 text = "State: "
 
 [node name="VPC_State" type="ViewportContainer" parent="Container"]
-margin_top = 72.0
-margin_bottom = 72.0
+margin_top = 90.0
+margin_bottom = 90.0
 size_flags_horizontal = 0
 stretch = true
 stretch_shrink = 5
@@ -244,16 +258,16 @@ material = SubResource( 11 )
 centered = false
 
 [node name="Label_Copy" type="Label" parent="Container"]
-margin_top = 76.0
+margin_top = 94.0
 margin_right = 41.0
-margin_bottom = 90.0
+margin_bottom = 108.0
 rect_min_size = Vector2( 0, 10 )
 size_flags_horizontal = 3
 text = "Copy: "
 
 [node name="VPC_Copy" type="ViewportContainer" parent="Container"]
-margin_top = 94.0
-margin_bottom = 94.0
+margin_top = 112.0
+margin_bottom = 112.0
 size_flags_horizontal = 0
 stretch = true
 stretch_shrink = 5
