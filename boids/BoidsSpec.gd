@@ -2,9 +2,11 @@ extends Resource
 class_name BoidsSpec
 
 export var world_size := Vector2(256,256)
+export var speed_min := 80.0
 export var speed_max := 100.0
 export var grid_resolution := 1.0
 export var boids_capacity := 100
+export var boids_size := 2.0
 export var boids_vision := 10.0
 
 var grid_size : Vector2 setget , _get_grid_size

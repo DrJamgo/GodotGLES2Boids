@@ -11,12 +11,15 @@
 [ext_resource path="res://assets/golf-flag.png" type="Texture" id=9]
 
 [sub_resource type="Resource" id=15]
+resource_local_to_scene = true
 script = ExtResource( 7 )
-world_size = Vector2( 400, 400 )
-speed_max = 100.0
-grid_resolution = 1.5
+world_size = Vector2( 256, 256 )
+speed_min = 64.0
+speed_max = 64.0
+grid_resolution = 2.0
 boids_capacity = 10000
-boids_vision = 20.0
+boids_size = 2.0
+boids_vision = 10.0
 
 [sub_resource type="GDScript" id=16]
 script/source = "extends ViewportContainer
@@ -50,6 +53,7 @@ resource_local_to_scene = true
 shader = ExtResource( 5 )
 shader_param/grid_size = null
 shader_param/world_size = null
+shader_param/vision_size_factor = null
 shader_param/state_texture = SubResource( 8 )
 
 [sub_resource type="QuadMesh" id=2]
@@ -108,7 +112,7 @@ shader_param/delta_time = 0.0
 shader_param/boids_vision = null
 shader_param/rule_seperation = 10.0
 shader_param/rule_coherence = 5.0
-shader_param/rule_alignment = 1.0
+shader_param/rule_alignment = 0.5
 shader_param/rule_target = 1.0
 shader_param/target = Vector3( 0, 0, 0 )
 shader_param/speed_min = 20.0
@@ -133,6 +137,7 @@ func setup(boids_spec : BoidsSpec):
     shader.set_shader_param(\"grid_size\", _spec.grid_size)
     shader.set_shader_param(\"world_size\", _spec.world_size)
     shader.set_shader_param(\"boids_vision\", _spec.boids_vision)
+    shader.set_shader_param(\"speed_min\", _spec.speed_min)
     shader.set_shader_param(\"speed_max\", _spec.speed_max)
 
 func set_target(position : Vector2):
@@ -182,22 +187,22 @@ script = ExtResource( 4 )
 boids_spec = SubResource( 15 )
 
 [node name="Container" type="VBoxContainer" parent="."]
-margin_right = 41.0
-margin_bottom = 112.0
+margin_right = 319.0
+margin_bottom = 88.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="Label_Boids" type="Label" parent="Container"]
-margin_right = 41.0
+margin_right = 319.0
 margin_bottom = 14.0
 
 [node name="Label_Grid" type="Label" parent="Container"]
 margin_top = 18.0
-margin_right = 41.0
+margin_right = 319.0
 margin_bottom = 32.0
 rect_min_size = Vector2( 0, 10 )
 size_flags_horizontal = 3
-text = "Grid: "
+text = "Grid (holds occupancy data and direction vectors):"
 
 [node name="VPC_Grid" type="ViewportContainer" parent="Container"]
 margin_top = 36.0
@@ -236,23 +241,17 @@ scale = Vector2( 0.0743966, 0.0743966 )
 texture = ExtResource( 9 )
 offset = Vector2( 0, -160 )
 
-[node name="ButtonStep" type="Button" parent="Container"]
-margin_top = 48.0
-margin_right = 41.0
-margin_bottom = 68.0
-text = "STEP"
-
 [node name="Label_State" type="Label" parent="Container"]
-margin_top = 72.0
-margin_right = 41.0
-margin_bottom = 86.0
+margin_top = 48.0
+margin_right = 319.0
+margin_bottom = 62.0
 rect_min_size = Vector2( 0, 10 )
 size_flags_horizontal = 3
-text = "State: "
+text = "State (holds particle data (pos, speed)): "
 
 [node name="VPC_State" type="ViewportContainer" parent="Container"]
-margin_top = 90.0
-margin_bottom = 90.0
+margin_top = 66.0
+margin_bottom = 66.0
 size_flags_horizontal = 0
 stretch = true
 stretch_shrink = 5
@@ -283,16 +282,16 @@ material = SubResource( 11 )
 centered = false
 
 [node name="Label_Copy" type="Label" parent="Container"]
-margin_top = 94.0
-margin_right = 41.0
-margin_bottom = 108.0
+margin_top = 70.0
+margin_right = 319.0
+margin_bottom = 84.0
 rect_min_size = Vector2( 0, 10 )
 size_flags_horizontal = 3
-text = "Copy: "
+text = "Copy (used to backcopy \"State\" for reading): "
 
 [node name="VPC_Copy" type="ViewportContainer" parent="Container"]
-margin_top = 112.0
-margin_bottom = 112.0
+margin_top = 88.0
+margin_bottom = 88.0
 size_flags_horizontal = 0
 stretch = true
 stretch_shrink = 5
@@ -313,5 +312,4 @@ texture = SubResource( 1 )
 centered = false
 
 [connection signal="clicked" from="Container/VPC_Grid" to="." method="_on_VPC_Grid_clicked"]
-[connection signal="pressed" from="Container/ButtonStep" to="Container/VPC_State/VP_State/BoidsProcesor" method="_on_ButtonStep_pressed"]
 [connection signal="boids_added" from="Container/VPC_State/VP_State" to="Container/VPC_Grid/VP_Grid/GridMultiMesh" method="_on_VP_State_boids_added"]

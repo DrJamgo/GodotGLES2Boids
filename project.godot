@@ -20,8 +20,8 @@ _global_script_class_icons={
 
 [application]
 
-config/name="Sheep"
-run/main_scene="res://boids/BoidsScene.tscn"
+config/name="Godot GLES2 Boids"
+run/main_scene="res://boids/BoidsExampleScene.tscn"
 config/icon="res://icon.png"
 
 [gui]

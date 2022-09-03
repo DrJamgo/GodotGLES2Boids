@@ -42,8 +42,8 @@ func add_boid(position : Vector2, amount : int, spread : Vector2):
         for i in range(0, boids_to_add):
             data.append(127)
             data.append(127)
-            data.append(0)
-            data.append(0)
+            data.append(0)   # <- unused
+            data.append(255) # <- unused
         
         var image = Image.new()
         image.create_from_data(boids_to_add, 2, false, Image.FORMAT_RGBA8, data)
