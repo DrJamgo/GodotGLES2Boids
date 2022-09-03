@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=2]
+[gd_scene load_steps=27 format=2]
 
 [ext_resource path="res://boids/radial_gradient.png" type="Texture" id=1]
 [ext_resource path="res://boids/VP_State.gd" type="Script" id=2]
@@ -8,14 +8,15 @@
 [ext_resource path="res://boids/CopyShader.gdshader" type="Shader" id=6]
 [ext_resource path="res://boids/BoidsSpec.gd" type="Script" id=7]
 [ext_resource path="res://boids/BoidsShader.gdshader" type="Shader" id=8]
+[ext_resource path="res://assets/golf-flag.png" type="Texture" id=9]
 
 [sub_resource type="Resource" id=15]
 script = ExtResource( 7 )
-world_size = Vector2( 200, 200 )
+world_size = Vector2( 400, 400 )
 speed_max = 100.0
-grid_resolution = 4.0
+grid_resolution = 1.5
 boids_capacity = 10000
-boids_vision = 10.0
+boids_vision = 20.0
 
 [sub_resource type="GDScript" id=16]
 script/source = "extends ViewportContainer
@@ -227,6 +228,13 @@ multimesh = SubResource( 3 )
 texture = ExtResource( 1 )
 script = ExtResource( 3 )
 state_texture = SubResource( 4 )
+
+[node name="TargetSprite" type="Sprite" parent="Container/VPC_Grid"]
+visible = false
+modulate = Color( 1, 0, 0, 1 )
+scale = Vector2( 0.0743966, 0.0743966 )
+texture = ExtResource( 9 )
+offset = Vector2( 0, -160 )
 
 [node name="ButtonStep" type="Button" parent="Container"]
 margin_top = 48.0

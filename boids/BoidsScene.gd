@@ -36,6 +36,7 @@ func _process(delta):
 
 func set_target(position):
     $Container/VPC_State/VP_State.set_target(position / boids_spec.grid_resolution)
+    $Container/VPC_Grid.set_target(position)
 
 func add_boid(position : Vector2):
     $Container/VPC_State/VP_State.add_boid(position / boids_spec.grid_resolution, 20, Vector2(20,20))
