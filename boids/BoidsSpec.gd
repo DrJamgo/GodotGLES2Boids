@@ -9,11 +9,19 @@ export var boids_capacity := 100
 export var boids_size := 2.0
 export var boids_vision := 10.0
 
+const _data_height := 2
+
 var grid_size : Vector2 setget , _get_grid_size
+var data_size : Vector2 setget , _get_data_size
 
 func _get_grid_size() -> Vector2:
     grid_size = world_to_grid(world_size)
     return grid_size
+    
+func _get_data_size() -> Vector2:
+    data_size.x = boids_capacity
+    data_size.y = _data_height
+    return data_size
 
 const max_value = Vector2(255.0, 255.0) * Vector2(255.0, 255.0)
 

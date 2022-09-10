@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=2]
+[gd_scene load_steps=28 format=2]
 
 [ext_resource path="res://boids/radial_gradient.png" type="Texture" id=1]
 [ext_resource path="res://boids/VP_State.gd" type="Script" id=2]
@@ -9,6 +9,8 @@
 [ext_resource path="res://boids/BoidsSpec.gd" type="Script" id=7]
 [ext_resource path="res://boids/BoidsShader.gdshader" type="Shader" id=8]
 [ext_resource path="res://assets/golf-flag.png" type="Texture" id=9]
+[ext_resource path="res://boids/BoidsProcessor.gd" type="Script" id=10]
+[ext_resource path="res://boids/BoidsGrid.gd" type="Script" id=11]
 
 [sub_resource type="Resource" id=15]
 resource_local_to_scene = true
@@ -64,10 +66,14 @@ custom_data_format = 2
 mesh = SubResource( 2 )
 
 [sub_resource type="ViewportTexture" id=4]
-viewport_path = NodePath("Container/VPC_State/VP_State")
+viewport_path = NodePath("Container/VPC_State/BoidsParticles")
 
 [sub_resource type="GDScript" id=9]
 script/source = "extends ViewportContainer
+
+func setup(spec : BoidsSpec):
+    self.rect_min_size = spec.data_size * self.stretch_shrink
+    $BoidsParticles.setup(spec)
 
 func _draw():
     draw_rect(Rect2(Vector2(0,0), rect_size), Color(1,1,1,1), false, 1.0)
@@ -79,12 +85,12 @@ func _input(event):
         var pos := mouse.position / stretch_shrink
         var x := int(pos.x)
         var y := int(pos.y)
-        if Rect2(Vector2(0,0), $VP_State.size).has_point(pos):
+        if Rect2(Vector2(0,0), $BoidsParticles.size).has_point(pos):
             $Cursor_Label.visible = true
             $Cursor_Label.rect_position = mouse.position - Vector2(0, $Cursor_Label.rect_size.y)
             $Cursor_Label.text = \"X,Y=\" +  str(x) + \",\" + str(y)
             
-            var image : Image = $VP_State.get_texture().get_data()
+            var image : Image = $BoidsParticles.get_texture().get_data()
             $Cursor_Label.text += \"\\nU,V=\" +  str(pos.x / image.get_width()) + \",\" + str(pos.y / image.get_height())
             
             image.lock()
@@ -122,43 +128,6 @@ shader_param/grid_texture = SubResource( 19 )
 [sub_resource type="ViewportTexture" id=5]
 viewport_path = NodePath("Container/VPC_Copy/VP_Copy")
 
-[sub_resource type="GDScript" id=18]
-script/source = "extends Sprite
-
-var _spec : BoidsSpec
-
-var _do_one_step := false
-
-func setup(boids_spec : BoidsSpec):
-    _spec = boids_spec
-    var shader := (material as ShaderMaterial)
-    
-    shader.set_shader_param(\"world_size\", _spec.world_size)
-    shader.set_shader_param(\"grid_size\", _spec.grid_size)
-    shader.set_shader_param(\"world_size\", _spec.world_size)
-    shader.set_shader_param(\"boids_vision\", _spec.boids_vision)
-    shader.set_shader_param(\"speed_min\", _spec.speed_min)
-    shader.set_shader_param(\"speed_max\", _spec.speed_max)
-
-func set_target(position : Vector2):
-    var shader := (material as ShaderMaterial)
-    if position:
-        shader.set_shader_param(\"target\", Vector3(position.x, position.y, 1.0))
-    else:
-        shader.set_shader_param(\"target\", Vector3(0,0,0))
-
-func _process(delta):
-    (material as ShaderMaterial).set_shader_param(\"delta_time\", delta)
-    if _do_one_step:
-        (material as ShaderMaterial).set_shader_param(\"delta_time\", delta)
-        yield(get_tree(), \"idle_frame\")
-        (material as ShaderMaterial).set_shader_param(\"delta_time\", 0.0)
-        _do_one_step = false
-
-func _on_ButtonStep_pressed():
-    _do_one_step = true
-"
-
 [sub_resource type="Shader" id=10]
 code = "shader_type canvas_item;
 render_mode blend_add, blend_premul_alpha;
@@ -178,7 +147,7 @@ func _draw():
 shader = ExtResource( 6 )
 
 [sub_resource type="ViewportTexture" id=1]
-viewport_path = NodePath("Container/VPC_State/VP_State")
+viewport_path = NodePath("Container/VPC_State/BoidsParticles")
 
 [node name="BoidsScene" type="MarginContainer"]
 size_flags_horizontal = 3
@@ -220,7 +189,9 @@ handle_input_locally = false
 hdr = false
 disable_3d = true
 usage = 1
+render_target_clear_mode = 1
 render_target_update_mode = 3
+script = ExtResource( 11 )
 
 [node name="ColorRect" type="ColorRect" parent="Container/VPC_Grid/VP_Grid"]
 margin_right = 40.0
@@ -261,7 +232,7 @@ script = SubResource( 9 )
 margin_right = 40.0
 margin_bottom = 14.0
 
-[node name="VP_State" type="Viewport" parent="Container/VPC_State"]
+[node name="BoidsParticles" type="Viewport" parent="Container/VPC_State"]
 size = Vector2( 2, 2 )
 transparent_bg = true
 handle_input_locally = false
@@ -271,13 +242,13 @@ usage = 1
 render_target_update_mode = 3
 script = ExtResource( 2 )
 
-[node name="BoidsProcesor" type="Sprite" parent="Container/VPC_State/VP_State"]
+[node name="BoidsProcesor" type="Sprite" parent="Container/VPC_State/BoidsParticles"]
 material = SubResource( 14 )
 texture = SubResource( 5 )
 centered = false
-script = SubResource( 18 )
+script = ExtResource( 10 )
 
-[node name="Cursor" type="Sprite" parent="Container/VPC_State/VP_State"]
+[node name="Cursor" type="Sprite" parent="Container/VPC_State/BoidsParticles"]
 material = SubResource( 11 )
 centered = false
 
@@ -312,4 +283,4 @@ texture = SubResource( 1 )
 centered = false
 
 [connection signal="clicked" from="Container/VPC_Grid" to="." method="_on_VPC_Grid_clicked"]
-[connection signal="boids_added" from="Container/VPC_State/VP_State" to="Container/VPC_Grid/VP_Grid/GridMultiMesh" method="_on_VP_State_boids_added"]
+[connection signal="boids_added" from="Container/VPC_State/BoidsParticles" to="Container/VPC_Grid/VP_Grid/GridMultiMesh" method="_on_VP_State_boids_added"]

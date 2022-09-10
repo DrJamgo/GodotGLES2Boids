@@ -14,9 +14,10 @@ func _get_num_boids() -> int:
 
 onready var rng := RandomNumberGenerator.new()
 
-func setup(boids_spec : BoidsSpec):
-    _spec = boids_spec
-    $BoidsProcesor.setup(boids_spec)
+func setup(spec : BoidsSpec):
+    _spec = spec
+    self.size = spec.data_size
+    $BoidsProcesor.setup(spec)
 
 func set_target(position : Vector2):
     $BoidsProcesor.set_target(position)
