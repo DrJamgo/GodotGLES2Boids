@@ -26,6 +26,8 @@ func _ready():
     $Container/VPC_Copy/VP_Copy.size = _state_text_size
     
     _update_labels()
+    
+    set_target(boids_spec.grid_size / 2.0)
 
 func _update_labels():
     $Container/Label_Boids.text = "Boids: " + str($Container/VPC_State/VP_State.num_boids) + "/" + str(boids_spec.boids_capacity)
