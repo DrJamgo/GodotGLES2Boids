@@ -1,3 +1,6 @@
+# MIT License
+# Copyright (c) 2022 DrJamgo
+
 extends Viewport
 
 signal boids_count_changed(amount)

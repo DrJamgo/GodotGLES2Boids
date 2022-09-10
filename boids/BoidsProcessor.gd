@@ -1,3 +1,6 @@
+# MIT License
+# Copyright (c) 2022 DrJamgo
+
 extends Sprite
 
 var _spec : BoidsSpec
@@ -10,8 +13,8 @@ func setup(boids_spec : BoidsSpec):
     shader.set_shader_param("grid_size", _spec.grid_size)
     shader.set_shader_param("world_size", _spec.world_size)
     shader.set_shader_param("boids_vision", _spec.boids_vision)
-    shader.set_shader_param("speed_min", _spec.speed_min)
-    shader.set_shader_param("speed_max", _spec.speed_max)
+    shader.set_shader_param("velocity_min", _spec.velocity_min)
+    shader.set_shader_param("velocity_max", _spec.velocity_max)
 
 func set_target(position : Vector2):
     var shader := (material as ShaderMaterial)

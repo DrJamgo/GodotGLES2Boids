@@ -1,3 +1,6 @@
+# MIT License
+# Copyright (c) 2022 DrJamgo
+
 extends MultiMeshInstance2D
 
 export var state_texture : ViewportTexture

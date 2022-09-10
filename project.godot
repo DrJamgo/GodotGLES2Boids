@@ -9,12 +9,18 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Node",
+"class": "BoidsInstance",
+"language": "GDScript",
+"path": "res://boids/BoidsInstance.gd"
+}, {
 "base": "Resource",
 "class": "BoidsSpec",
 "language": "GDScript",
 "path": "res://boids/BoidsSpec.gd"
 } ]
 _global_script_class_icons={
+"BoidsInstance": "",
 "BoidsSpec": ""
 }
 

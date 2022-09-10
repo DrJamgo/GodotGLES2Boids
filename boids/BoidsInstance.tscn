@@ -1,7 +1,7 @@
 [gd_scene load_steps=24 format=2]
 
 [ext_resource path="res://boids/GridMultiMesh.gd" type="Script" id=1]
-[ext_resource path="res://boids/VP_State.gd" type="Script" id=2]
+[ext_resource path="res://boids/BoidsParticles.gd" type="Script" id=2]
 [ext_resource path="res://boids/BoidsSpec.gd" type="Script" id=3]
 [ext_resource path="res://boids/radial_gradient.png" type="Texture" id=4]
 [ext_resource path="res://boids/CopyShader.gdshader" type="Shader" id=5]
@@ -14,8 +14,8 @@
 [sub_resource type="Resource" id=23]
 script = ExtResource( 3 )
 world_size = Vector2( 256, 256 )
-speed_min = 80.0
-speed_max = 100.0
+velocity_min = 80.0
+velocity_max = 100.0
 grid_resolution = 1.0
 boids_capacity = 1000
 boids_size = 2.0
@@ -40,10 +40,10 @@ custom_data_format = 2
 mesh = SubResource( 2 )
 
 [sub_resource type="ViewportTexture" id=4]
-viewport_path = NodePath("BoidsInstance/BoidsParticles")
+viewport_path = NodePath("BoidsParticles")
 
 [sub_resource type="ViewportTexture" id=19]
-viewport_path = NodePath("BoidsInstance/VP_Grid")
+viewport_path = NodePath("BoidsSpatial")
 
 [sub_resource type="ShaderMaterial" id=14]
 resource_local_to_scene = true
@@ -57,12 +57,12 @@ shader_param/rule_coherence = 5.0
 shader_param/rule_alignment = 0.5
 shader_param/rule_target = 1.0
 shader_param/target = Vector3( 0, 0, 0 )
-shader_param/speed_min = 20.0
-shader_param/speed_max = 50.0
+shader_param/velocity_min = 20.0
+shader_param/velocity_max = 50.0
 shader_param/grid_texture = SubResource( 19 )
 
 [sub_resource type="ViewportTexture" id=5]
-viewport_path = NodePath("BoidsInstance/VP_Copy")
+viewport_path = NodePath("Copy")
 
 [sub_resource type="Shader" id=10]
 code = "shader_type canvas_item;
@@ -76,13 +76,13 @@ shader = SubResource( 10 )
 shader = ExtResource( 5 )
 
 [sub_resource type="ViewportTexture" id=1]
-viewport_path = NodePath("BoidsInstance/BoidsParticles")
+viewport_path = NodePath("BoidsParticles")
 
 [node name="BoidsInstance" type="Node"]
 script = ExtResource( 10 )
 boids_spec = SubResource( 23 )
 
-[node name="VP_Grid" type="Viewport" parent="."]
+[node name="BoidsSpatial" type="Viewport" parent="."]
 size = Vector2( 8, 8 )
 transparent_bg = true
 handle_input_locally = false
@@ -93,12 +93,12 @@ render_target_clear_mode = 1
 render_target_update_mode = 3
 script = ExtResource( 8 )
 
-[node name="ColorRect" type="ColorRect" parent="VP_Grid"]
+[node name="ColorRect" type="ColorRect" parent="BoidsSpatial"]
 margin_right = 40.0
 margin_bottom = 40.0
 color = Color( 0.498039, 0.498039, 0.498039, 1 )
 
-[node name="GridMultiMesh" type="MultiMeshInstance2D" parent="VP_Grid"]
+[node name="GridMultiMesh" type="MultiMeshInstance2D" parent="BoidsSpatial"]
 material = SubResource( 7 )
 multimesh = SubResource( 3 )
 texture = ExtResource( 4 )
@@ -125,7 +125,7 @@ script = ExtResource( 9 )
 material = SubResource( 11 )
 centered = false
 
-[node name="VP_Copy" type="Viewport" parent="."]
+[node name="Copy" type="Viewport" parent="."]
 size = Vector2( 2, 2 )
 transparent_bg = true
 handle_input_locally = false
@@ -134,10 +134,10 @@ disable_3d = true
 usage = 1
 render_target_update_mode = 3
 
-[node name="BoidsTexture" type="Sprite" parent="VP_Copy"]
+[node name="BoidsTexture" type="Sprite" parent="Copy"]
 material = SubResource( 13 )
 texture = SubResource( 1 )
 centered = false
 
-[connection signal="boids_count_changed" from="." to="VP_Grid/GridMultiMesh" method="_on_BoidsInstance_boids_count_changed"]
+[connection signal="boids_count_changed" from="." to="BoidsSpatial/GridMultiMesh" method="_on_BoidsInstance_boids_count_changed"]
 [connection signal="boids_count_changed" from="BoidsParticles" to="." method="_on_BoidsParticles_boids_count_changed"]

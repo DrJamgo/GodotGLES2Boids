@@ -6,7 +6,7 @@ uniform vec2 grid_size;
 uniform vec2 world_size;
 uniform float vision_size_factor;
 
-varying vec2 speed;
+varying vec2 velocity;
 
 vec2 rgba_to_grid(in vec4 color)
 {
@@ -19,7 +19,7 @@ vec2 rgba_to_grid(in vec4 color)
 void vertex() {
     VERTEX *= vision_size_factor;
     VERTEX += rgba_to_grid(texture(state_texture, INSTANCE_CUSTOM.xy));
-    speed = texture(state_texture, INSTANCE_CUSTOM.xy - vec2(0,0.5)).rg;
+    velocity = texture(state_texture, INSTANCE_CUSTOM.xy - vec2(0,0.5)).rg;
 }
 
 void fragment(){
@@ -27,6 +27,6 @@ void fragment(){
     COLOR.a = pow(COLOR.a, 1.0) * 0.5;
     if(length(UV - vec2(0.5,0.5)) < (0.25 / vision_size_factor))
         COLOR.a += 0.5;
-    COLOR.rg = speed;
+    COLOR.rg = velocity;
     COLOR.b = 1.0;
 }

@@ -16,8 +16,8 @@ uniform float rule_alignment = 1.0;
 uniform float rule_target = 1.0;
 uniform vec3  target = vec3(0,0,0); // active if Z > 0
 
-uniform float speed_min = 20.0;
-uniform float speed_max = 50.0;
+uniform float velocity_min = 20.0;
+uniform float velocity_max = 50.0;
 
 //
 // Some helper functions to convert from and to pixel data
@@ -43,16 +43,16 @@ vec4 world_to_rgba(in vec2 world)
     return color;
 }
 
-const vec2 SPEED_OFFSET = vec2(127.0 / 255.0, 127.0 / 255.0);
+const vec2 velocity_OFFSET = vec2(127.0 / 255.0, 127.0 / 255.0);
 
-vec2 rg_to_speed(in vec2 color)
+vec2 rg_to_velocity(in vec2 color)
 {
-    return (color.rg - SPEED_OFFSET) * (2.0 * speed_max);
+    return (color.rg - velocity_OFFSET) * (2.0 * velocity_max);
 }
 
-vec2 speed_to_rg(in vec2 speed)
+vec2 velocity_to_rg(in vec2 velocity)
 {
-    return (speed / (2.0 * speed_max)) + SPEED_OFFSET;
+    return (velocity / (2.0 * velocity_max)) + velocity_OFFSET;
 }
 
 highp vec2 world_to_grid(in highp vec2 world)
@@ -63,7 +63,7 @@ highp vec2 world_to_grid(in highp vec2 world)
 }
 
 const float pos_v = 0.25;
-const float speed_v = 0.75;
+const float velocity_v = 0.75;
 const float PI = 3.14159;
 const float ANGLE_NUMSTEPS = 16.0;
 const float ANGLE_STEP = PI / ANGLE_NUMSTEPS * 2.0;
@@ -74,15 +74,15 @@ void fragment() {
     COLOR = texture(TEXTURE, UV);
     
     vec2 pos   = rgba_to_world(texture(TEXTURE, vec2(UV.x, pos_v)));
-    vec2 speed = rg_to_speed(texture(TEXTURE, vec2(UV.x, speed_v)).rg);
+    vec2 velocity = rg_to_velocity(texture(TEXTURE, vec2(UV.x, velocity_v)).rg);
     
     if(delta_time > 0.0 && length(COLOR) > 0.0) {
         // Position
         if(UV.y < 0.5) {
-            pos += speed * delta_time;
+            pos += velocity * delta_time;
             COLOR = world_to_rgba(pos);
         }
-        // speed
+        // velocity
         else {
             float self = texture(grid_texture, world_to_grid(pos)).a;
             vec2 gradient = vec2(0.0,0.0);
@@ -97,7 +97,7 @@ void fragment() {
                     float alpha =  (rgba.b - 0.5);
                     
                     gradient += normalize(dir) / pow(radius, 2.0) * alpha;
-                    heading += rg_to_speed(rgba.rg);
+                    heading += rg_to_velocity(rgba.rg);
                     if(alpha > max_value) {
                         max_value = alpha;
                         density = normalize(dir) * alpha * radius;
@@ -109,26 +109,26 @@ void fragment() {
             gradient /= (ANGLE_NUMSTEPS * RADIUS_NUM_STEPS);
             heading /= (ANGLE_NUMSTEPS * RADIUS_NUM_STEPS);
             
-            speed = -gradient * rule_seperation;
-            speed += density * rule_coherence;
-            speed += heading * rule_alignment;
+            velocity = -gradient * rule_seperation;
+            velocity += density * rule_coherence;
+            velocity += heading * rule_alignment;
             if(target.z > 0.0) {
-                speed += normalize(target.xy - pos) * rule_target;
+                velocity += normalize(target.xy - pos) * rule_target;
             }
             
-            // check speed limits
-            float speed_abs = length(speed);
-            if(speed_abs == 0.0) {
-                //speed = vec2(min_speed, 0);
+            // check velocity limits
+            float velocity_abs = length(velocity);
+            if(velocity_abs == 0.0) {
+                //velocity = vec2(min_velocity, 0);
             }
-            else if(speed_abs < speed_min) {
-                speed *= speed_min / speed_abs;
+            else if(velocity_abs < velocity_min) {
+                velocity *= velocity_min / velocity_abs;
             }
-            else if(speed_abs > speed_max){
-                speed *= speed_max / speed_abs;
+            else if(velocity_abs > velocity_max){
+                velocity *= velocity_max / velocity_abs;
             }
             
-            COLOR.rg = speed_to_rg(speed);
+            COLOR.rg = velocity_to_rg(velocity);
         }
     }
 }

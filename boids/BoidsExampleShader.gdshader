@@ -3,7 +3,7 @@ shader_type canvas_item;
 uniform sampler2D state_texture;
 uniform vec2 world_size;
 
-varying vec2 speed;
+varying vec2 velocity;
 
 vec2 rgba_to_world(in vec4 color)
 {
@@ -21,8 +21,8 @@ vec2 rotate(vec2 v, float a) {
 }
 
 void vertex() {
-    speed = texture(state_texture, INSTANCE_CUSTOM.xy - vec2(0,0.5)).rg;
-    float angle = atan(speed.g-0.5, speed.r-0.5);
+    velocity = texture(state_texture, INSTANCE_CUSTOM.xy - vec2(0,0.5)).rg;
+    float angle = atan(velocity.g-0.5, velocity.r-0.5);
     
     VERTEX.xy = rotate(VERTEX.xy, angle);
     
@@ -32,5 +32,5 @@ void vertex() {
 
 void fragment(){
     COLOR = texture(TEXTURE, UV);
-    COLOR.rg = speed;
+    COLOR.rg = velocity;
 }
