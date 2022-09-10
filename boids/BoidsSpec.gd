@@ -12,16 +12,16 @@ export var boids_vision := 10.0
 const _data_height := 2
 
 var grid_size : Vector2 setget , _get_grid_size
-var data_size : Vector2 setget , _get_data_size
+var state_size : Vector2 setget , _get_state_size
 
 func _get_grid_size() -> Vector2:
     grid_size = world_to_grid(world_size)
     return grid_size
     
-func _get_data_size() -> Vector2:
-    data_size.x = boids_capacity
-    data_size.y = _data_height
-    return data_size
+func _get_state_size() -> Vector2:
+    state_size.x = boids_capacity
+    state_size.y = _data_height
+    return state_size
 
 const max_value = Vector2(255.0, 255.0) * Vector2(255.0, 255.0)
 
@@ -42,7 +42,7 @@ func world_to_rgba(vector : Vector2) -> Color:
     return color
 
 func rgba_to_world(color : Color) -> Vector2:
-    var vector : Vector2
+    var vector := Vector2(0,0)
     vector.x = (color.r * 255.0 + color.g) * world_size.x / max_value.x
     vector.y = (color.b * 255.0 + color.a) * world_size.y / max_value.y
     return vector

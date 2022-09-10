@@ -1,6 +1,6 @@
 extends Viewport
 
-signal boids_added(amount)
+signal boids_count_changed(amount)
 
 var _spec : BoidsSpec
 var num_boids := 0 setget _set_num_boids, _get_num_boids
@@ -16,18 +16,18 @@ onready var rng := RandomNumberGenerator.new()
 
 func setup(spec : BoidsSpec):
     _spec = spec
-    self.size = spec.data_size
+    self.size = spec.state_size
     $BoidsProcesor.setup(spec)
 
 func set_target(position : Vector2):
     $BoidsProcesor.set_target(position)
 
-func add_boid(position : Vector2, amount : int, spread : Vector2):
+func add_boids_with_spread(position : Vector2, amount : int, spread : Vector2):
     
     var boids_to_add = min(_spec.boids_capacity - $Cursor.offset.x, amount)
     
     if boids_to_add > 0:
-        var data : PoolByteArray
+        var data := PoolByteArray()
         
         for i in range(0, boids_to_add):
             var pos = position + Vector2(rng.randf_range(-spread.x, spread.x),rng.randf_range(-spread.y, spread.y))
@@ -58,8 +58,10 @@ func add_boid(position : Vector2, amount : int, spread : Vector2):
         $Cursor.texture = null
         
         _set_num_boids(num_boids + boids_to_add)
-        emit_signal("boids_added", boids_to_add)
+        emit_signal("boids_count_changed", num_boids)
         
     else:
-        push_error("Boids capacity (" + str(_spec.boids_capacity) + ") exceded!")
+        push_error("No Boids added (" + str(_spec.boids_capacity) + ")")
+        
+    
     

@@ -2,8 +2,6 @@ extends Sprite
 
 var _spec : BoidsSpec
 
-var _do_one_step := false
-
 func setup(boids_spec : BoidsSpec):
     _spec = boids_spec
     var shader := (material as ShaderMaterial)
@@ -24,11 +22,3 @@ func set_target(position : Vector2):
 
 func _process(delta):
     (material as ShaderMaterial).set_shader_param("delta_time", delta)
-    if _do_one_step:
-        (material as ShaderMaterial).set_shader_param("delta_time", delta)
-        yield(get_tree(), "idle_frame")
-        (material as ShaderMaterial).set_shader_param("delta_time", 0.0)
-        _do_one_step = false
-
-func _on_ButtonStep_pressed():
-    _do_one_step = true
