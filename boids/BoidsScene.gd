@@ -6,7 +6,7 @@ onready var spec := ($BoidsInstance.boids_spec as BoidsSpec)
 func _ready():
     $Container/Label_Grid.text += str(spec.grid_size.x) + "x" + str(spec.grid_size.y)
     $Container/Label_Grid.text += "  World:" + str(spec.world_size.x) + "x" + str(spec.world_size.y)
-    $Container/VPC_Grid.texture  = $BoidsInstance.spatial_texture
+    $Container/VPC_Grid.texture  = $BoidsInstance.grid_texture
     $Container/VPC_Grid.rect_min_size = spec.grid_size * $Container/VPC_Grid.stretch_shrink
 
     $Container/Label_State.text += str(spec.state_size.x) + "x" + str(spec.state_size.y)

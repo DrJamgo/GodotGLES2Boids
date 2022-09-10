@@ -8,18 +8,19 @@ signal boids_count_changed(amount)
 
 export var boids_spec : Resource
 
-onready var spatial_texture : ViewportTexture = $BoidsSpatial.get_texture()
+onready var grid_texture : ViewportTexture = $BoidsGrid.get_texture()
 onready var particles_texture : ViewportTexture = $BoidsParticles.get_texture()
 onready var copy_texture : ViewportTexture = $Copy.get_texture()
 
 func _ready():
     var spec := (boids_spec as BoidsSpec)
-    $BoidsSpatial.size = spec.grid_size
-    $BoidsSpatial.setup(spec)
+    $BoidsGrid.size = spec.grid_size
+    $BoidsGrid.setup(spec, particles_texture)
     
-    $BoidsParticles.setup(spec)
+    $BoidsParticles.setup(spec, copy_texture, grid_texture)
     
     $Copy.size = spec.state_size
+    $Copy/BoidsTexture.texture = particles_texture
 
 func _on_BoidsParticles_boids_count_changed(amount):
     emit_signal("boids_count_changed", amount)

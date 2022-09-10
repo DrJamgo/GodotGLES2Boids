@@ -32,13 +32,9 @@ func grid_to_world(grid : Vector2) -> Vector2:
     return grid / grid_resolution
 
 func world_to_rgba(vector : Vector2) -> Color:
-    var color : Color
     vector *= (max_value / world_size).round();
-    
-    color.r = int(vector.x) / 255
-    color.g = int(vector.x) % 255
-    color.b = int(vector.y) / 255
-    color.a = int(vector.y) % 255
+    var color := Color(int(vector.x) / 255, int(vector.x) % 255, 
+                       int(vector.y) / 255, int(vector.y) % 255)
     return color
 
 func rgba_to_world(color : Color) -> Vector2:

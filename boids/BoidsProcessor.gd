@@ -5,7 +5,7 @@ extends Sprite
 
 var _spec : BoidsSpec
 
-func setup(boids_spec : BoidsSpec):
+func setup(boids_spec : BoidsSpec, copy_texture : ViewportTexture, grid_texture : ViewportTexture):
     _spec = boids_spec
     var shader := (material as ShaderMaterial)
     
@@ -15,6 +15,8 @@ func setup(boids_spec : BoidsSpec):
     shader.set_shader_param("boids_vision", _spec.boids_vision)
     shader.set_shader_param("velocity_min", _spec.velocity_min)
     shader.set_shader_param("velocity_max", _spec.velocity_max)
+    shader.set_shader_param("grid_texture", grid_texture)
+    texture = copy_texture
 
 func set_target(position : Vector2):
     var shader := (material as ShaderMaterial)

@@ -3,9 +3,7 @@
 
 extends MultiMeshInstance2D
 
-export var state_texture : ViewportTexture
-
-func setup(boids_spec : BoidsSpec):
+func setup(boids_spec : BoidsSpec, particles_texture : ViewportTexture):
     var num_boids = boids_spec.boids_capacity
     
     multimesh.instance_count = num_boids
@@ -21,7 +19,7 @@ func setup(boids_spec : BoidsSpec):
     shader.set_shader_param("grid_size", boids_spec.grid_size)
     shader.set_shader_param("world_size", boids_spec.world_size)
     shader.set_shader_param("vision_size_factor", boids_spec.boids_vision / boids_spec.boids_size)
-    shader.set_shader_param("state_texture", state_texture)
+    shader.set_shader_param("state_texture", particles_texture)
 
 func _on_BoidsInstance_boids_count_changed(amount):
     multimesh.visible_instance_count = amount

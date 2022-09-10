@@ -3,6 +3,6 @@
 
 extends Viewport
 
-func setup(spec : BoidsSpec):
+func setup(spec : BoidsSpec, particles_texture : ViewportTexture):
     $ColorRect.rect_min_size = spec.grid_size
-    $GridMultiMesh.setup(spec)
+    $GridMultiMesh.setup(spec, particles_texture)
