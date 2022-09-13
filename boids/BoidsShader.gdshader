@@ -11,7 +11,7 @@ uniform float boids_vision;
 // Boids rules
 //
 uniform float rule_seperation = 20.0;
-uniform float rule_coherence = 5.0;
+uniform float rule_cohesion = 5.0;
 uniform float rule_alignment = 1.0;
 uniform float rule_target = 1.0;
 uniform vec3  target = vec3(0,0,0); // active if Z > 0
@@ -89,6 +89,7 @@ void fragment() {
             vec2 density  = vec2(0.0,0.0);
             vec2 heading = vec2(0,0);
             float max_value = 0.0;
+            float gradien_sum = 0.0;
             
             for(float angle = -PI; angle < PI; angle += PI / 8.0) {
                 for(float radius = RADIUS_STEP; radius <= 1.0; radius += RADIUS_STEP) {
@@ -96,21 +97,22 @@ void fragment() {
                     vec4 rgba = texture(grid_texture, world_to_grid(pos + dir));
                     float alpha =  (rgba.b - 0.5);
                     
-                    gradient += normalize(dir) / pow(radius, 2.0) * alpha;
+                    float gradient_weight = pow(1.0 - radius, 1.0);
+                    gradien_sum += gradient_weight;
+                    gradient += normalize(dir) * gradient_weight * alpha;
                     heading += rg_to_velocity(rgba.rg);
-                    if(alpha > max_value) {
-                        max_value = alpha;
-                        density = normalize(dir) * alpha * radius;
-                    }
+                    
+                    density += normalize(dir) * alpha * radius;
                 }
             }
             
             // normalize values
-            gradient /= (ANGLE_NUMSTEPS * RADIUS_NUM_STEPS);
+            gradient /= gradien_sum;
             heading /= (ANGLE_NUMSTEPS * RADIUS_NUM_STEPS);
+            density /= (ANGLE_NUMSTEPS * RADIUS_NUM_STEPS);
             
             velocity = -gradient * rule_seperation;
-            velocity += density * rule_coherence;
+            velocity += density * rule_cohesion;
             velocity += heading * rule_alignment;
             if(target.z > 0.0) {
                 velocity += normalize(target.xy - pos) * rule_target;

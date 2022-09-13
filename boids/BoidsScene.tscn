@@ -103,7 +103,6 @@ text = "Grid (holds occupancy data and direction vectors):"
 [node name="VPC_Grid" type="TextureRect" parent="Container"]
 margin_top = 36.0
 margin_bottom = 36.0
-mouse_default_cursor_shape = 3
 size_flags_horizontal = 0
 size_flags_vertical = 0
 stretch_mode = 5

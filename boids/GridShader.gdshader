@@ -24,7 +24,7 @@ void vertex() {
 
 void fragment(){
     COLOR = texture(TEXTURE, UV);
-    COLOR.a = pow(COLOR.a, 1.0) * 0.5;
+    COLOR.a = pow(COLOR.a, 2.0) * 0.5;
     if(length(UV - vec2(0.5,0.5)) < (0.25 / vision_size_factor))
         COLOR.a += 0.5;
     COLOR.rg = velocity;

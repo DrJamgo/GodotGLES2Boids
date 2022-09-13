@@ -1,6 +1,7 @@
 # MIT License
 # Copyright (c) 2022 DrJamgo
 
+class_name BoidsMultimeshInstance2D
 extends MultiMeshInstance2D
 
 func setup(boids_spec : BoidsSpec, particles_texture : ViewportTexture):

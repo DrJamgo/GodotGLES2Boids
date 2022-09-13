@@ -26,4 +26,9 @@ func set_target(position : Vector2):
         shader.set_shader_param("target", Vector3(0,0,0))
 
 func _process(delta):
-    (material as ShaderMaterial).set_shader_param("delta_time", delta)
+    var shader := (material as ShaderMaterial)
+    shader.set_shader_param("delta_time", delta)
+    shader.set_shader_param("rule_cohesion", _spec.rule_cohesion)
+    shader.set_shader_param("rule_seperation", _spec.rule_seperation)
+    shader.set_shader_param("rule_alignment", _spec.rule_alignment)
+    shader.set_shader_param("rule_target", _spec.rule_target)

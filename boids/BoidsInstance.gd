@@ -11,6 +11,7 @@ export var boids_spec : Resource
 onready var grid_texture : ViewportTexture = $BoidsGrid.get_texture()
 onready var particles_texture : ViewportTexture = $BoidsParticles.get_texture()
 onready var copy_texture : ViewportTexture = $Copy.get_texture()
+onready var boids_multimesh : BoidsMultimeshInstance2D = $BoidsGrid/GridMultiMesh
 
 func _ready():
     var spec := (boids_spec as BoidsSpec)

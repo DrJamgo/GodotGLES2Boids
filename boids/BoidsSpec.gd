@@ -9,6 +9,11 @@ export var boids_capacity := 100
 export var boids_size := 2.0
 export var boids_vision := 10.0
 
+export var rule_cohesion := 10.0
+export var rule_seperation := 10.0
+export var rule_alignment := 1.0
+export var rule_target := 1.0
+
 const _data_height := 2
 
 var grid_size : Vector2 setget , _get_grid_size
