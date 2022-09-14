@@ -97,7 +97,7 @@ void fragment() {
                     vec4 rgba = texture(grid_texture, world_to_grid(pos + dir));
                     float alpha =  (rgba.b - 0.5);
                     
-                    float gradient_weight = pow(1.0 - radius, 1.0);
+                    float gradient_weight = pow(1.0 - radius, 4.0);
                     gradien_sum += gradient_weight;
                     gradient += normalize(dir) * gradient_weight * alpha;
                     heading += rg_to_velocity(rgba.rg);

@@ -4,8 +4,8 @@ class_name BoidsSpec
 export var world_size := Vector2(256,256)
 export var velocity_min := 80.0
 export var velocity_max := 100.0
-export var grid_resolution := 1.0
-export var boids_capacity := 100
+export(float, 0.1, 10.0) var grid_resolution := 1.0
+export(int, 1, 16384) var boids_capacity := 100
 export var boids_size := 2.0
 export var boids_vision := 10.0
 

@@ -17,11 +17,11 @@ world_size = Vector2( 800, 800 )
 velocity_min = 80.0
 velocity_max = 100.0
 grid_resolution = 1.0
-boids_capacity = 16000
+boids_capacity = 16384
 boids_size = 5.0
 boids_vision = 30.0
 rule_cohesion = 10.0
-rule_seperation = 100.0
+rule_seperation = 200.0
 rule_alignment = 0.5
 rule_target = 1.0
 
@@ -83,7 +83,7 @@ script = ExtResource( 8 )
 [node name="ColorRect" type="ColorRect" parent="BoidsGrid"]
 margin_right = 40.0
 margin_bottom = 40.0
-color = Color( 0.501961, 0.501961, 0.501961, 0.592157 )
+color = Color( 0.501961, 0.501961, 0.501961, 1 )
 
 [node name="GridMultiMesh" type="MultiMeshInstance2D" parent="BoidsGrid"]
 material = SubResource( 7 )

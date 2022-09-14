@@ -13,7 +13,7 @@ func setup(boids_spec : BoidsSpec, particles_texture : ViewportTexture):
     (multimesh.mesh as QuadMesh).size = Vector2(1,1) * boids_spec.boids_size * boids_spec.grid_resolution
     
     for index in range(0, num_boids):
-        multimesh.set_instance_custom_data(index, Color((float(index) + 0.25) / float(num_boids), 0.75, 0.0, 0.0))
+        multimesh.set_instance_custom_data(index, Color((float(index) + 0.5) / float(num_boids), 0.75, 0.0, 0.0))
         multimesh.set_instance_transform_2d(index, Transform2D.IDENTITY)
     
     var shader := (material as ShaderMaterial)
