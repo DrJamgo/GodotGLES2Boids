@@ -9,10 +9,15 @@ export(int, 1, 16384) var boids_capacity := 100
 export var boids_size := 2.0
 export var boids_vision := 10.0
 
-export var rule_cohesion := 10.0
-export var rule_seperation := 10.0
+export var rule_cohesion := 50.0
+export var rule_seperation := 200.0
 export var rule_alignment := 1.0
-export var rule_target := 1.0
+export var rule_target := 10.0
+export var rule_colision := 100.0
+
+export var grid_power := 1.5
+export var seperation_power := 1.5
+
 
 const _data_height := 2
 

@@ -6,6 +6,8 @@ uniform vec2 grid_size;
 uniform float delta_time = 0.0;
 uniform sampler2D grid_texture;
 uniform float boids_vision;
+uniform float boids_size;
+uniform float seperation_power;
 
 //
 // Boids rules
@@ -14,6 +16,7 @@ uniform float rule_seperation = 20.0;
 uniform float rule_cohesion = 5.0;
 uniform float rule_alignment = 1.0;
 uniform float rule_target = 1.0;
+uniform float rule_collision = 100.0;
 uniform vec3  target = vec3(0,0,0); // active if Z > 0
 
 uniform float velocity_min = 20.0;
@@ -91,18 +94,22 @@ void fragment() {
             float max_value = 0.0;
             float gradien_sum = 0.0;
             
-            for(float angle = -PI; angle < PI; angle += PI / 8.0) {
-                for(float radius = RADIUS_STEP; radius <= 1.0; radius += RADIUS_STEP) {
-                    vec2 dir = vec2(cos(angle), sin(angle)) * radius * boids_vision;
+            for(float r = RADIUS_STEP; r <= 1.0; r += RADIUS_STEP) {
+                float radius = r * (boids_vision - boids_size) + boids_size;
+                float gradient_weight = pow(1.0 - r, seperation_power);
+                gradien_sum += gradient_weight * ANGLE_NUMSTEPS;
+                
+                for(float angle = -PI; angle < PI; angle += ANGLE_STEP) {
+                
+                    vec2 dir = vec2(cos(angle), sin(angle)) * radius;
                     vec4 rgba = texture(grid_texture, world_to_grid(pos + dir));
                     float alpha =  (rgba.b - 0.5);
                     
-                    float gradient_weight = pow(1.0 - radius, 4.0);
-                    gradien_sum += gradient_weight;
-                    gradient += normalize(dir) * gradient_weight * alpha;
+                    
+                    gradient -= normalize(dir) * gradient_weight * alpha;
                     heading += rg_to_velocity(rgba.rg);
                     
-                    density += normalize(dir) * alpha * radius;
+                    density += normalize(dir) * alpha * r;
                 }
             }
             
@@ -111,9 +118,11 @@ void fragment() {
             heading /= (ANGLE_NUMSTEPS * RADIUS_NUM_STEPS);
             density /= (ANGLE_NUMSTEPS * RADIUS_NUM_STEPS);
             
-            velocity = -gradient * rule_seperation;
+            velocity = vec2(mod(TIME*UV.x*1389.0, 2.0) - 1.0,mod(TIME*UV.x*7821.0, 2.0) - 1.0) * 1.0;
+            velocity += gradient * rule_seperation;
             velocity += density * rule_cohesion;
             velocity += heading * rule_alignment;
+            
             if(target.z > 0.0) {
                 velocity += normalize(target.xy - pos) * rule_target;
             }
@@ -121,7 +130,7 @@ void fragment() {
             // check velocity limits
             float velocity_abs = length(velocity);
             if(velocity_abs == 0.0) {
-                //velocity = vec2(min_velocity, 0);
+                // velocity = vec2(velocity_min, 0);
             }
             else if(velocity_abs < velocity_min) {
                 velocity *= velocity_min / velocity_abs;

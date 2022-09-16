@@ -17,9 +17,18 @@ func _ready():
     $Container/VPC_Copy.texture = $BoidsInstance.copy_texture
     $Container/VPC_Copy.rect_min_size = spec.state_size * $Container/VPC_Copy.stretch_shrink
     
-    _update_labels()
+    _update_labels() 
     
-    set_target(spec.grid_size / 2.0)
+    var fields = ["rule_seperation","rule_cohesion", "rule_alignment", "rule_colision",
+                  "rule_target", "velocity_min", "boids_size", "boids_vision",
+                "seperation_power", "grid_power"]
+    for field in fields:
+        var new_slider = preload("res://SliderWithLabel.tscn").instance()
+        new_slider.target_object = spec
+        new_slider.target_field = field
+        $Sliders.add_child(new_slider)
+    
+    # set_target(spec.grid_size / 2.0)
 
 func _update_labels():
     $Container/Label_Boids.text = "Boids: " + str($BoidsInstance.get_num_boids()) + "/" + str(spec.boids_capacity)
@@ -34,7 +43,7 @@ func set_target(position):
     $Container/VPC_Grid.set_target(position)
 
 func add_boid(position : Vector2):
-    $BoidsInstance.add_boids_with_spread(position / spec.grid_resolution, 50, Vector2(20,20))
+    $BoidsInstance.add_boids_with_spread(position / spec.grid_resolution, 200, Vector2(30,30))
 
 func get_state_texture() -> ViewportTexture:
     return $Container/VPC_State/VP_State.get_texture()

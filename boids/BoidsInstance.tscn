@@ -13,17 +13,20 @@
 
 [sub_resource type="Resource" id=23]
 script = ExtResource( 3 )
-world_size = Vector2( 800, 800 )
+world_size = Vector2( 400, 400 )
 velocity_min = 80.0
 velocity_max = 100.0
-grid_resolution = 1.0
+grid_resolution = 2.0
 boids_capacity = 16384
-boids_size = 5.0
-boids_vision = 30.0
-rule_cohesion = 10.0
+boids_size = 2.0
+boids_vision = 10.0
+rule_cohesion = 50.0
 rule_seperation = 200.0
-rule_alignment = 0.5
-rule_target = 1.0
+rule_alignment = 1.0
+rule_target = 10.0
+rule_colision = 100.0
+grid_power = 1.5
+seperation_power = 1.5
 
 [sub_resource type="ShaderMaterial" id=7]
 resource_local_to_scene = true
@@ -31,6 +34,7 @@ shader = ExtResource( 6 )
 shader_param/grid_size = null
 shader_param/world_size = null
 shader_param/vision_size_factor = null
+shader_param/grid_power = null
 
 [sub_resource type="QuadMesh" id=2]
 size = Vector2( 32, 32 )
@@ -46,10 +50,13 @@ shader_param/world_size = null
 shader_param/grid_size = null
 shader_param/delta_time = 0.0
 shader_param/boids_vision = null
+shader_param/boids_size = null
+shader_param/seperation_power = null
 shader_param/rule_seperation = 100.0
 shader_param/rule_cohesion = 5.0
 shader_param/rule_alignment = 0.5
 shader_param/rule_target = 1.0
+shader_param/rule_collision = 1000.0
 shader_param/target = Vector3( 0, 0, 0 )
 shader_param/velocity_min = 20.0
 shader_param/velocity_max = 50.0
@@ -83,7 +90,7 @@ script = ExtResource( 8 )
 [node name="ColorRect" type="ColorRect" parent="BoidsGrid"]
 margin_right = 40.0
 margin_bottom = 40.0
-color = Color( 0.501961, 0.501961, 0.501961, 1 )
+color = Color( 0.498039, 0.498039, 0.498039, 1 )
 
 [node name="GridMultiMesh" type="MultiMeshInstance2D" parent="BoidsGrid"]
 material = SubResource( 7 )
