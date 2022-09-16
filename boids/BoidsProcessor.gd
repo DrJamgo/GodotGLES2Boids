@@ -12,8 +12,6 @@ func setup(boids_spec : BoidsSpec, copy_texture : ViewportTexture, grid_texture 
     shader.set_shader_param("world_size", _spec.world_size)
     shader.set_shader_param("grid_size", _spec.grid_size)
     shader.set_shader_param("world_size", _spec.world_size)
-    shader.set_shader_param("velocity_min", _spec.velocity_min)
-    shader.set_shader_param("velocity_max", _spec.velocity_max)
     shader.set_shader_param("grid_texture", grid_texture)
     texture = copy_texture
 
@@ -33,5 +31,6 @@ func _process(delta):
     shader.set_shader_param("rule_seperation", _spec.rule_seperation)
     shader.set_shader_param("rule_alignment", _spec.rule_alignment)
     shader.set_shader_param("rule_target", _spec.rule_target)
-    shader.set_shader_param("rule_collision", _spec.rule_colision)
     shader.set_shader_param("seperation_power", _spec.seperation_power)
+    shader.set_shader_param("velocity_min", _spec.velocity_min)
+    shader.set_shader_param("velocity_max", _spec.velocity_max)

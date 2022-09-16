@@ -16,7 +16,6 @@ uniform float rule_seperation = 20.0;
 uniform float rule_cohesion = 5.0;
 uniform float rule_alignment = 1.0;
 uniform float rule_target = 1.0;
-uniform float rule_collision = 100.0;
 uniform vec3  target = vec3(0,0,0); // active if Z > 0
 
 uniform float velocity_min = 20.0;

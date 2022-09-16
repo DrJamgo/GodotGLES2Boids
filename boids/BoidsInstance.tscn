@@ -56,7 +56,6 @@ shader_param/rule_seperation = 100.0
 shader_param/rule_cohesion = 5.0
 shader_param/rule_alignment = 0.5
 shader_param/rule_target = 1.0
-shader_param/rule_collision = 1000.0
 shader_param/target = Vector3( 0, 0, 0 )
 shader_param/velocity_min = 20.0
 shader_param/velocity_max = 50.0
@@ -90,7 +89,7 @@ script = ExtResource( 8 )
 [node name="ColorRect" type="ColorRect" parent="BoidsGrid"]
 margin_right = 40.0
 margin_bottom = 40.0
-color = Color( 0.498039, 0.498039, 0.498039, 1 )
+color = Color( 0.498039, 0.498039, 0.498039, 0.266667 )
 
 [node name="GridMultiMesh" type="MultiMeshInstance2D" parent="BoidsGrid"]
 material = SubResource( 7 )

@@ -19,8 +19,8 @@ func _ready():
     
     _update_labels() 
     
-    var fields = ["rule_seperation","rule_cohesion", "rule_alignment", "rule_colision",
-                  "rule_target", "velocity_min", "boids_size", "boids_vision",
+    var fields = ["rule_seperation","rule_cohesion", "rule_alignment",
+                  "rule_target", "velocity_min", "velocity_max", "boids_size", "boids_vision",
                 "seperation_power", "grid_power"]
     for field in fields:
         var new_slider = preload("res://SliderWithLabel.tscn").instance()
