@@ -139,6 +139,7 @@ void fragment() {
             }
             
             COLOR.rg = velocity_to_rg(velocity);
+            COLOR.b = mod(length(velocity) * delta_time / 8.0 + COLOR.b, 1.0);
         }
     }
 }

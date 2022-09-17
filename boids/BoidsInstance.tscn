@@ -14,16 +14,16 @@
 [sub_resource type="Resource" id=23]
 script = ExtResource( 3 )
 world_size = Vector2( 400, 400 )
-velocity_min = 80.0
+velocity_min = 50.0
 velocity_max = 100.0
 grid_resolution = 2.0
 boids_capacity = 16384
 boids_size = 2.0
 boids_vision = 10.0
 rule_cohesion = 50.0
-rule_seperation = 200.0
-rule_alignment = 1.0
-rule_target = 10.0
+rule_seperation = 300.0
+rule_alignment = 2.0
+rule_target = 20.0
 rule_colision = 100.0
 grid_power = 1.5
 seperation_power = 1.5
