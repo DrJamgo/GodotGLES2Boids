@@ -105,7 +105,7 @@ void fragment() {
                     float alpha =  (rgba.b - 0.5);
                     
                     
-                    gradient -= normalize(dir) * gradient_weight * alpha;
+                    gradient -= normalize(dir) * gradient_weight * abs(alpha);
                     heading += rg_to_velocity(rgba.rg);
                     
                     density += normalize(dir) * alpha * r;

@@ -13,6 +13,7 @@ onready var particles_texture : ViewportTexture = $BoidsParticles.get_texture()
 onready var copy_texture : ViewportTexture = $Copy.get_texture()
 onready var boids_multimesh : BoidsMultimeshInstance2D = $BoidsGrid/GridMultiMesh
 
+
 func _ready():
     var spec := (boids_spec as BoidsSpec)
     $BoidsGrid.size = spec.grid_size
@@ -31,6 +32,9 @@ func get_num_boids() -> int:
 
 func add_boids_with_spread(position : Vector2, amount : int, spread : Vector2):
     $BoidsParticles.add_boids_with_spread(position, amount, spread)
+    
+func add_external_agent(node : Node2D, radius : float, isFriend : bool):
+    $BoidsGrid.add_external_agent(node, radius, isFriend)
     
 func set_target(position):
     $BoidsParticles.set_target(position)

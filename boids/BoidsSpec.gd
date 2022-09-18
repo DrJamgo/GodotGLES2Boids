@@ -47,6 +47,17 @@ func world_to_rgba(vector : Vector2) -> Color:
                        int(vector.y) / 255, int(vector.y) % 255)
     return color
 
+# const Vector2 _velocity_OFFSET = vec2(127.0 / 255.0, 127.0 / 255.0);
+
+#func rg_to_velocity(color : Color) -> Vector2:
+#    return (Vector2(color.r, color.g) - velocity_OFFSET) * (2.0 * velocity_max);
+
+func velocity_to_rg(velocity : Vector2) -> Color:
+    velocity /= velocity_max * 2.0
+    velocity += Vector2(0.5, 0.5)
+    return Color(velocity.x, velocity.y, 0, 0)
+
+
 func rgba_to_world(color : Color) -> Vector2:
     var vector := Vector2(0,0)
     vector.x = (color.r * 255.0 + color.g) * world_size.x / max_value.x

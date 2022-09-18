@@ -14,9 +14,11 @@ script/source = "extends Node2D
 
 func _ready():
     #$SheepMeshInstance.multimesh = $BoidsInstance.boids_multimesh
-    $BoidsInstance.add_boids_with_spread($Player.position, 200, Vector2(100,100))
+    $BoidsInstance.add_boids_with_spread($Player.position, 100, Vector2(100,100))
     #$BoidsInstance.set_target(Vector2(0,0))
     $TextureRect.texture = $BoidsInstance.grid_texture
+    $BoidsInstance.add_external_agent($Player, 32, true)
+    $BoidsInstance.add_external_agent($Doggo, 64, false)
     
     var boids_spec : BoidsSpec = $BoidsInstance.boids_spec
     var boids_multimesh = $BoidsInstance.boids_multimesh.multimesh
@@ -101,7 +103,7 @@ region = Rect2( 0, 0, 9, 12 )
 [sub_resource type="GDScript" id=11]
 script/source = "extends KinematicBody2D
 
-const WALK_SPEED = 40
+const WALK_SPEED = 50
 var velocity = Vector2()
 
 func _process(delta):
