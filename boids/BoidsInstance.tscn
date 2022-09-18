@@ -12,18 +12,19 @@
 [ext_resource path="res://boids/BoidsInstance.gd" type="Script" id=10]
 
 [sub_resource type="Resource" id=23]
+resource_local_to_scene = true
 script = ExtResource( 3 )
-world_size = Vector2( 400, 400 )
-velocity_min = 50.0
+world_size = Vector2( 1000, 1000 )
+velocity_min = 30.0
 velocity_max = 100.0
-grid_resolution = 2.0
+grid_resolution = 1.0
 boids_capacity = 16384
-boids_size = 2.0
-boids_vision = 10.0
+boids_size = 10.0
+boids_vision = 40.0
 rule_cohesion = 50.0
-rule_seperation = 300.0
-rule_alignment = 2.0
-rule_target = 20.0
+rule_seperation = 400.0
+rule_alignment = 1.3
+rule_target = 5.0
 rule_colision = 100.0
 grid_power = 1.5
 seperation_power = 1.5

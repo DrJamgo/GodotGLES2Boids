@@ -1,0 +1,185 @@
+[gd_scene load_steps=20 format=2]
+
+[ext_resource path="res://boids/BoidsInstance.tscn" type="PackedScene" id=1]
+[ext_resource path="res://assets/sheep.png" type="Texture" id=2]
+[ext_resource path="res://assets/doggo.png" type="Texture" id=3]
+[ext_resource path="res://SheepInstanceShader.gdshader" type="Shader" id=4]
+[ext_resource path="res://Sliders.tscn" type="PackedScene" id=5]
+[ext_resource path="res://assets/player.png" type="Texture" id=6]
+[ext_resource path="res://8FrameSprite.gd" type="Script" id=7]
+[ext_resource path="res://boids/BoidsSpec.gd" type="Script" id=8]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Node2D
+
+func _ready():
+    #$SheepMeshInstance.multimesh = $BoidsInstance.boids_multimesh
+    $BoidsInstance.add_boids_with_spread($Player.position, 200, Vector2(100,100))
+    #$BoidsInstance.set_target(Vector2(0,0))
+    $TextureRect.texture = $BoidsInstance.grid_texture
+    
+    var boids_spec : BoidsSpec = $BoidsInstance.boids_spec
+    var boids_multimesh = $BoidsInstance.boids_multimesh.multimesh
+    $Sliders.setup(boids_spec)
+    $SheepMeshInstance.multimesh.instance_count = boids_multimesh.instance_count
+    
+    for index in range(0, boids_multimesh.instance_count):
+        $SheepMeshInstance.multimesh.set_instance_custom_data(index, boids_multimesh.get_instance_custom_data(index))
+        $SheepMeshInstance.multimesh.set_instance_transform_2d(index, Transform2D.IDENTITY)
+    
+    var shader := ($SheepMeshInstance.material as ShaderMaterial)
+    shader.set_shader_param(\"grid_size\", boids_spec.grid_size)
+    shader.set_shader_param(\"world_size\", boids_spec.world_size)
+    shader.set_shader_param(\"state_texture\", $BoidsInstance.particles_texture)
+    shader.set_shader_param(\"velocity_max\", boids_spec.velocity_max)
+
+func _process(delta):
+    $SheepMeshInstance.multimesh.visible_instance_count = $BoidsInstance.get_num_boids()
+
+func _physics_process(delta):
+    $BoidsInstance.set_target($Player.position)
+"
+
+[sub_resource type="Resource" id=12]
+resource_local_to_scene = true
+script = ExtResource( 8 )
+world_size = Vector2( 1000, 1000 )
+velocity_min = 30.0
+velocity_max = 100.0
+grid_resolution = 1.0
+boids_capacity = 16384
+boids_size = 10.0
+boids_vision = 30.0
+rule_cohesion = 50.0
+rule_seperation = 300.0
+rule_alignment = 1.6
+rule_target = 1.0
+rule_colision = 200.0
+grid_power = 1.5
+seperation_power = 1.5
+
+[sub_resource type="ShaderMaterial" id=5]
+shader = ExtResource( 4 )
+shader_param/grid_size = null
+shader_param/world_size = null
+shader_param/velocity_max = null
+
+[sub_resource type="QuadMesh" id=2]
+size = Vector2( 36, -48 )
+
+[sub_resource type="MultiMesh" id=3]
+custom_data_format = 2
+mesh = SubResource( 2 )
+
+[sub_resource type="AtlasTexture" id=6]
+atlas = ExtResource( 2 )
+region = Rect2( 0, 0, 9, 12 )
+
+[sub_resource type="GDScript" id=9]
+script/source = "extends KinematicBody2D
+
+const WALK_SPEED = 200
+var velocity = Vector2()
+
+func _process(delta):
+    $Sprite.velocity = velocity
+    
+func _physics_process(delta):
+    velocity = get_local_mouse_position()
+    if(velocity.length() > WALK_SPEED):
+        velocity = velocity.normalized() * WALK_SPEED 
+
+    move_and_slide(velocity, Vector2(0, 0))
+"
+
+[sub_resource type="CircleShape2D" id=7]
+
+[sub_resource type="AtlasTexture" id=8]
+atlas = ExtResource( 3 )
+region = Rect2( 0, 0, 9, 12 )
+
+[sub_resource type="GDScript" id=11]
+script/source = "extends KinematicBody2D
+
+const WALK_SPEED = 40
+var velocity = Vector2()
+
+func _process(delta):
+    $Sprite.velocity = velocity
+    
+func _physics_process(delta):
+
+    if Input.is_action_pressed(\"ui_left\"):
+        velocity.x = -WALK_SPEED
+    elif Input.is_action_pressed(\"ui_right\"):
+        velocity.x =  WALK_SPEED
+    else:
+        velocity.x = 0
+        
+    if Input.is_action_pressed(\"ui_up\"):
+        velocity.y = -WALK_SPEED
+    elif Input.is_action_pressed(\"ui_down\"):
+        velocity.y =  WALK_SPEED
+    else:
+        velocity.y = 0
+
+    move_and_slide(velocity, Vector2(0, 0))
+"
+
+[sub_resource type="AtlasTexture" id=10]
+atlas = ExtResource( 6 )
+region = Rect2( 0, 0, 9, 12 )
+
+[node name="Sheep" type="Node2D"]
+script = SubResource( 1 )
+
+[node name="ColorRect" type="ColorRect" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 1000, 1000 )
+color = Color( 0.286275, 0.490196, 0.345098, 1 )
+
+[node name="TextureRect" type="TextureRect" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+flip_v = true
+
+[node name="BoidsInstance" parent="." instance=ExtResource( 1 )]
+boids_spec = SubResource( 12 )
+
+[node name="SheepMeshInstance" type="MultiMeshInstance2D" parent="."]
+material = SubResource( 5 )
+multimesh = SubResource( 3 )
+texture = SubResource( 6 )
+
+[node name="Sliders" parent="." instance=ExtResource( 5 )]
+margin_left = 515.0
+margin_top = 1.0
+margin_right = 515.0
+margin_bottom = 181.0
+
+[node name="Doggo" type="KinematicBody2D" parent="."]
+position = Vector2( 373, 197 )
+script = SubResource( 9 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Doggo"]
+shape = SubResource( 7 )
+
+[node name="Sprite" type="Sprite" parent="Doggo"]
+scale = Vector2( 4, 4 )
+texture = SubResource( 8 )
+offset = Vector2( 0, -4 )
+script = ExtResource( 7 )
+
+[node name="Player" type="KinematicBody2D" parent="."]
+position = Vector2( 275, 271 )
+script = SubResource( 11 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+shape = SubResource( 7 )
+
+[node name="Sprite" type="Sprite" parent="Player"]
+scale = Vector2( 4, 4 )
+texture = SubResource( 10 )
+offset = Vector2( 0, -4 )
+script = ExtResource( 7 )

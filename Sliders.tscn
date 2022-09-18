@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=2]
+
+[sub_resource type="GDScript" id=18]
+script/source = "extends VBoxContainer
+
+func setup(spec : BoidsSpec):
+    var fields = [\"rule_seperation\",\"rule_cohesion\", \"rule_alignment\",
+                  \"rule_target\", \"velocity_min\", \"velocity_max\", \"boids_size\", \"boids_vision\",
+                \"seperation_power\", \"grid_power\"]
+    for field in fields:
+        var new_slider = preload(\"res://SliderWithLabel.tscn\").instance()
+        new_slider.target_object = spec
+        new_slider.target_field = field
+        add_child(new_slider)
+"
+
+[node name="Sliders" type="VBoxContainer"]
+margin_bottom = 180.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = SubResource( 18 )
