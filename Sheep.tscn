@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=2]
+[gd_scene load_steps=23 format=2]
 
 [ext_resource path="res://boids/BoidsInstance.tscn" type="PackedScene" id=1]
 [ext_resource path="res://assets/sheep.png" type="Texture" id=2]
@@ -9,21 +9,23 @@
 [ext_resource path="res://8FrameSprite.gd" type="Script" id=7]
 [ext_resource path="res://boids/BoidsSpec.gd" type="Script" id=8]
 [ext_resource path="res://assets/plain-arrow.png" type="Texture" id=9]
+[ext_resource path="res://Panel.gd" type="Script" id=10]
+[ext_resource path="res://assets/move.png" type="Texture" id=11]
 
 [sub_resource type="GDScript" id=1]
 script/source = "extends Node2D
 
 func _ready():
     #$SheepMeshInstance.multimesh = $BoidsInstance.boids_multimesh
-    $BoidsInstance.add_boids_with_spread($Player.position, 100, Vector2(100,100))
+    $BoidsInstance.add_boids_with_spread($Player.position, 100, Vector2(300,300))
     #$BoidsInstance.set_target(Vector2(0,0))
-    $TextureRect.texture = $BoidsInstance.grid_texture
+    $DebugGrdTexture.texture = $BoidsInstance.grid_texture
     $BoidsInstance.add_external_agent($Player, 24, true)
     $BoidsInstance.add_external_agent($Doggo, 64, false)
     
     var boids_spec : BoidsSpec = $BoidsInstance.boids_spec
     var boids_multimesh = $BoidsInstance.boids_multimesh.multimesh
-    $Sliders.setup(boids_spec)
+    $Panel/Sliders.setup(boids_spec)
     $SheepMeshInstance.multimesh.instance_count = boids_multimesh.instance_count
     
     for index in range(0, boids_multimesh.instance_count):
@@ -41,13 +43,18 @@ func _process(delta):
 
 func _physics_process(delta):
     $BoidsInstance.set_target($Player.position)
+
+func _on_ButtonDebug_toggled(button_pressed):
+    $DebugGrdTexture.visible = button_pressed
+    for node in get_tree().get_nodes_in_group(\"debug_visu\"):
+        node.visible = button_pressed
 "
 
 [sub_resource type="Resource" id=12]
 resource_local_to_scene = true
 script = ExtResource( 8 )
-world_size = Vector2( 1000, 1000 )
-velocity_min = 30.0
+world_size = Vector2( 1280, 720 )
+velocity_min = 25.0
 velocity_max = 100.0
 grid_resolution = 1.0
 boids_capacity = 16384
@@ -55,7 +62,7 @@ boids_size = 10.0
 boids_vision = 40.0
 rule_cohesion = 100.0
 rule_seperation = 200.0
-rule_alignment = 1.6
+rule_alignment = 1.0
 rule_target = 0.3
 rule_colision = 200.0
 grid_power = 1.5
@@ -128,6 +135,9 @@ func _physics_process(delta):
         velocity.y = 0
 
     move_and_slide(velocity, Vector2(0, 0))
+
+    if velocity.length() > 0.0:
+        $Tutorial.visible = false
 "
 
 [sub_resource type="AtlasTexture" id=10]
@@ -138,12 +148,12 @@ region = Rect2( 0, 0, 9, 12 )
 script = SubResource( 1 )
 
 [node name="ColorRect" type="ColorRect" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
-rect_min_size = Vector2( 1000, 1000 )
+margin_right = 1280.0
+margin_bottom = 720.0
+rect_min_size = Vector2( 1280, 720 )
 color = Color( 0.286275, 0.490196, 0.345098, 1 )
 
-[node name="TextureRect" type="TextureRect" parent="."]
+[node name="DebugGrdTexture" type="TextureRect" parent="."]
 visible = false
 margin_right = 40.0
 margin_bottom = 40.0
@@ -157,21 +167,37 @@ material = SubResource( 5 )
 multimesh = SubResource( 3 )
 texture = SubResource( 6 )
 
-[node name="Sliders" parent="." instance=ExtResource( 5 )]
-margin_left = 515.0
-margin_top = 1.0
-margin_right = 515.0
-margin_bottom = 181.0
+[node name="Panel" type="HBoxContainer" parent="."]
+rect_min_size = Vector2( 0, 24 )
+script = ExtResource( 10 )
+
+[node name="ButtonDebug" type="CheckButton" parent="Panel"]
+margin_right = 155.0
+margin_bottom = 40.0
+text = "Debug View"
+
+[node name="ButtonBoidsSettings" type="CheckButton" parent="Panel"]
+margin_left = 159.0
+margin_right = 330.0
+margin_bottom = 40.0
+text = "Boids Settings"
+
+[node name="Sliders" parent="Panel" instance=ExtResource( 5 )]
+visible = false
+margin_left = 334.0
+margin_right = 334.0
+margin_bottom = 40.0
 
 [node name="Doggo" type="KinematicBody2D" parent="."]
-position = Vector2( 135, 74 )
+position = Vector2( 156, 107 )
 script = SubResource( 9 )
 
 [node name="Arrow" type="Node2D" parent="Doggo"]
 
-[node name="Sprite2" type="Sprite" parent="Doggo/Arrow"]
-position = Vector2( 18, 0 )
-scale = Vector2( 0.0445812, 0.0196333 )
+[node name="ArrowSprite" type="Sprite" parent="Doggo/Arrow"]
+modulate = Color( 1, 1, 1, 0.415686 )
+position = Vector2( 24, 0 )
+scale = Vector2( 0.06, 0.03 )
 texture = ExtResource( 9 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Doggo"]
@@ -183,9 +209,37 @@ texture = SubResource( 8 )
 offset = Vector2( 0, -4 )
 script = ExtResource( 7 )
 
+[node name="Label2" type="Label" parent="Doggo" groups=["debug_visu"]]
+visible = false
+modulate = Color( 0.556863, 0, 0, 1 )
+margin_left = -43.0
+margin_top = -34.0
+margin_right = 52.0
+margin_bottom = -20.0
+text = "doggo is scary"
+
 [node name="Player" type="KinematicBody2D" parent="."]
 position = Vector2( 448, 443 )
 script = SubResource( 11 )
+
+[node name="Tutorial" type="Node2D" parent="Player"]
+
+[node name="Tutorial" type="RichTextLabel" parent="Player/Tutorial"]
+margin_left = -94.0
+margin_top = -64.0
+margin_right = 106.0
+margin_bottom = -50.0
+grow_horizontal = 2
+grow_vertical = 2
+bbcode_enabled = true
+bbcode_text = "[color=yellow]WASD[/color] or [color=yellow]ARROW[/color]-keys to move"
+text = "WASD or ARROW-keys to move"
+scroll_active = false
+
+[node name="Sprite2" type="Sprite" parent="Player/Tutorial"]
+modulate = Color( 1, 1, 1, 0.47451 )
+scale = Vector2( 0.252494, 0.252494 )
+texture = ExtResource( 11 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
 shape = SubResource( 7 )
@@ -195,3 +249,15 @@ scale = Vector2( 4, 4 )
 texture = SubResource( 10 )
 offset = Vector2( 0, -4 )
 script = ExtResource( 7 )
+
+[node name="Label" type="Label" parent="Player" groups=["debug_visu"]]
+visible = false
+modulate = Color( 0, 0.227451, 0.0392157, 1 )
+margin_left = -76.0
+margin_top = -55.0
+margin_right = 102.0
+margin_bottom = -41.0
+text = "shepherd is part of the herd"
+
+[connection signal="toggled" from="Panel/ButtonDebug" to="." method="_on_ButtonDebug_toggled"]
+[connection signal="toggled" from="Panel/ButtonBoidsSettings" to="Panel" method="_on_ButtonBoidsSettings_toggled"]
