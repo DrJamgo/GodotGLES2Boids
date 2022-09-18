@@ -92,6 +92,7 @@ void fragment() {
             vec2 heading = vec2(0,0);
             float max_value = 0.0;
             float gradien_sum = 0.0;
+            float negative = 0.0;
             
             for(float r = RADIUS_STEP; r <= 1.0; r += RADIUS_STEP) {
                 float radius = r * (boids_vision - boids_size) + boids_size;
@@ -106,9 +107,15 @@ void fragment() {
                     
                     
                     gradient -= normalize(dir) * gradient_weight * abs(alpha);
-                    heading += rg_to_velocity(rgba.rg);
+                    
+                    if(alpha >= 0.0) {
+                        heading += rg_to_velocity(rgba.rg);
+                    }
                     
                     density += normalize(dir) * alpha * r;
+                    if(alpha < 0.0) {
+                        negative += (0.5 - alpha) * 2.0;
+                    }
                 }
             }
             
@@ -116,23 +123,28 @@ void fragment() {
             gradient /= gradien_sum;
             heading /= (ANGLE_NUMSTEPS * RADIUS_NUM_STEPS);
             density /= (ANGLE_NUMSTEPS * RADIUS_NUM_STEPS);
+            negative /= (ANGLE_NUMSTEPS * RADIUS_NUM_STEPS);
+            
+            float fear_factor = (1.0 + negative);
             
             velocity = vec2(mod(TIME*UV.x*1389.0, 2.0) - 1.0,mod(TIME*UV.x*7821.0, 2.0) - 1.0) * 1.0;
             velocity += gradient * rule_seperation;
-            velocity += density * rule_cohesion;
+            velocity += density * rule_cohesion * fear_factor;
             velocity += heading * rule_alignment;
             
             if(target.z > 0.0) {
                 velocity += normalize(target.xy - pos) * rule_target;
             }
             
+            float _velocity_min = velocity_min * fear_factor;
+            
             // check velocity limits
             float velocity_abs = length(velocity);
             if(velocity_abs == 0.0) {
                 // velocity = vec2(velocity_min, 0);
             }
-            else if(velocity_abs < velocity_min) {
-                velocity *= velocity_min / velocity_abs;
+            else if(velocity_abs < _velocity_min) {
+                velocity *= _velocity_min / velocity_abs;
             }
             else if(velocity_abs > velocity_max){
                 velocity *= velocity_max / velocity_abs;

@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=2]
+[gd_scene load_steps=21 format=2]
 
 [ext_resource path="res://boids/BoidsInstance.tscn" type="PackedScene" id=1]
 [ext_resource path="res://assets/sheep.png" type="Texture" id=2]
@@ -8,6 +8,7 @@
 [ext_resource path="res://assets/player.png" type="Texture" id=6]
 [ext_resource path="res://8FrameSprite.gd" type="Script" id=7]
 [ext_resource path="res://boids/BoidsSpec.gd" type="Script" id=8]
+[ext_resource path="res://assets/plain-arrow.png" type="Texture" id=9]
 
 [sub_resource type="GDScript" id=1]
 script/source = "extends Node2D
@@ -17,7 +18,7 @@ func _ready():
     $BoidsInstance.add_boids_with_spread($Player.position, 100, Vector2(100,100))
     #$BoidsInstance.set_target(Vector2(0,0))
     $TextureRect.texture = $BoidsInstance.grid_texture
-    $BoidsInstance.add_external_agent($Player, 32, true)
+    $BoidsInstance.add_external_agent($Player, 24, true)
     $BoidsInstance.add_external_agent($Doggo, 64, false)
     
     var boids_spec : BoidsSpec = $BoidsInstance.boids_spec
@@ -51,11 +52,11 @@ velocity_max = 100.0
 grid_resolution = 1.0
 boids_capacity = 16384
 boids_size = 10.0
-boids_vision = 30.0
-rule_cohesion = 50.0
-rule_seperation = 300.0
+boids_vision = 40.0
+rule_cohesion = 100.0
+rule_seperation = 200.0
 rule_alignment = 1.6
-rule_target = 1.0
+rule_target = 0.3
 rule_colision = 200.0
 grid_power = 1.5
 seperation_power = 1.5
@@ -85,6 +86,7 @@ var velocity = Vector2()
 
 func _process(delta):
     $Sprite.velocity = velocity
+    $Arrow.rotation = atan2(velocity.y, velocity.x)
     
 func _physics_process(delta):
     velocity = get_local_mouse_position()
@@ -142,6 +144,7 @@ rect_min_size = Vector2( 1000, 1000 )
 color = Color( 0.286275, 0.490196, 0.345098, 1 )
 
 [node name="TextureRect" type="TextureRect" parent="."]
+visible = false
 margin_right = 40.0
 margin_bottom = 40.0
 flip_v = true
@@ -161,8 +164,15 @@ margin_right = 515.0
 margin_bottom = 181.0
 
 [node name="Doggo" type="KinematicBody2D" parent="."]
-position = Vector2( 373, 197 )
+position = Vector2( 135, 74 )
 script = SubResource( 9 )
+
+[node name="Arrow" type="Node2D" parent="Doggo"]
+
+[node name="Sprite2" type="Sprite" parent="Doggo/Arrow"]
+position = Vector2( 18, 0 )
+scale = Vector2( 0.0445812, 0.0196333 )
+texture = ExtResource( 9 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Doggo"]
 shape = SubResource( 7 )
@@ -174,7 +184,7 @@ offset = Vector2( 0, -4 )
 script = ExtResource( 7 )
 
 [node name="Player" type="KinematicBody2D" parent="."]
-position = Vector2( 275, 271 )
+position = Vector2( 448, 443 )
 script = SubResource( 11 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]

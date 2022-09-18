@@ -16,8 +16,7 @@ func _process(delta):
         new_region.position.x += frame * default_region.size.x
         atlas.region = new_region
 
-        offset.y = default_offset.y + sin(dist / 100.0) * velocity.length() / 200.0
-
-        dist += velocity.length()
+        offset.y = default_offset.y + sin(dist / 2.0) * 0.5 * velocity.length() / 100.0
+        dist += min(velocity.length(), 100) * delta
     else:
         dist = 0.0
