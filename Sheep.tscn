@@ -20,6 +20,7 @@ func _ready():
     $BoidsInstance.add_boids_with_spread($Player.position, 100, Vector2(300,300))
     #$BoidsInstance.set_target(Vector2(0,0))
     $DebugGrdTexture.texture = $BoidsInstance.grid_texture
+    $DebugGrdTexture.rect_scale = Vector2(1,1) / $BoidsInstance.boids_spec.grid_resolution
     $BoidsInstance.add_external_agent($Player, 24, true)
     $BoidsInstance.add_external_agent($Doggo, 64, false)
     
@@ -56,8 +57,8 @@ script = ExtResource( 8 )
 world_size = Vector2( 1280, 720 )
 velocity_min = 25.0
 velocity_max = 100.0
-grid_resolution = 1.0
-boids_capacity = 16384
+grid_resolution = 0.1
+boids_capacity = 1024
 boids_size = 10.0
 boids_vision = 40.0
 rule_cohesion = 100.0
@@ -90,6 +91,9 @@ script/source = "extends KinematicBody2D
 
 const WALK_SPEED = 200
 var velocity = Vector2()
+
+func _draw():
+    draw_arc(Vector2(0,0), 64.0, -PI, PI, 40, Color(1.0,1.0,1.0,0.2), 2.0)
 
 func _process(delta):
     $Sprite.velocity = velocity

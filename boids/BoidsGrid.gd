@@ -15,11 +15,12 @@ func _process(delta):
     for agent in _external_agents:
         var node : Node2D = agent["node"]
         var sprite : Sprite = agent["sprite"]
-        var diff = (node.position - sprite.position) / delta
+        var node_pos_on_grid = node.position * _spec.grid_resolution
+        var diff = (node_pos_on_grid - sprite.position) / delta
         var rg = _spec.velocity_to_rg(diff);
         sprite.self_modulate.r = rg.r
         sprite.self_modulate.g = rg.g
-        sprite.position = node.position
+        sprite.position = node_pos_on_grid
 
 func add_external_agent(node : Node2D, radius : float, isFriend : bool):
     var sprite = Sprite.new()
