@@ -5,15 +5,18 @@ extends Sprite
 
 var _spec : BoidsSpec
 
-func setup(boids_spec : BoidsSpec, copy_texture : ViewportTexture, grid_texture : ViewportTexture):
+func setup(boids_spec : BoidsSpec, copy_texture : ViewportTexture, dynamic_grid : ViewportTexture):
     _spec = boids_spec
     var shader := (material as ShaderMaterial)
     
     shader.set_shader_param("world_size", _spec.world_size)
     shader.set_shader_param("grid_size", _spec.grid_size)
     shader.set_shader_param("world_size", _spec.world_size)
-    shader.set_shader_param("grid_texture", grid_texture)
+    shader.set_shader_param("dynamic_grid", dynamic_grid)
     texture = copy_texture
+
+func set_static_grid(static_grid : Texture):
+    (material as ShaderMaterial).set_shader_param("static_grid", static_grid)
 
 func set_target(position : Vector2):
     var shader := (material as ShaderMaterial)

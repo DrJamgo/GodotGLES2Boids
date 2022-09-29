@@ -17,13 +17,16 @@ func _get_num_boids() -> int:
 
 onready var rng := RandomNumberGenerator.new()
 
-func setup(spec : BoidsSpec, copy_texture : ViewportTexture, grid_texture : ViewportTexture):
+func setup(spec : BoidsSpec, copy_texture : ViewportTexture, dynamic_grid : ViewportTexture):
     _spec = spec
     self.size = spec.state_size
-    $BoidsProcesor.setup(spec, copy_texture, grid_texture)
+    $BoidsProcesor.setup(spec, copy_texture, dynamic_grid)
 
 func set_target(position : Vector2):
     $BoidsProcesor.set_target(position)
+
+func set_static_grid(static_grid : Texture):
+    $BoidsProcesor.set_static_grid(static_grid)
 
 func add_boids_with_spread(position : Vector2, amount : int, spread : Vector2):
     

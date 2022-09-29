@@ -4,7 +4,8 @@ render_mode blend_add, blend_premul_alpha;
 uniform vec2 world_size;
 uniform vec2 grid_size;
 uniform float delta_time = 0.0;
-uniform sampler2D grid_texture;
+uniform sampler2D dynamic_grid;
+uniform sampler2D static_grid;
 uniform float boids_vision;
 uniform float boids_size;
 uniform float seperation_power;
@@ -86,8 +87,9 @@ void fragment() {
         }
         // velocity
         else {
-            float self = texture(grid_texture, world_to_grid(pos)).a;
+            float self = texture(dynamic_grid, world_to_grid(pos)).a;
             vec2 gradient = vec2(0.0,0.0);
+            vec2 collision = vec2(0.0,0.0);
             vec2 density  = vec2(0.0,0.0);
             vec2 heading = vec2(0,0);
             float max_value = 0.0;
@@ -102,11 +104,13 @@ void fragment() {
                 for(float angle = -PI; angle < PI; angle += ANGLE_STEP) {
                 
                     vec2 dir = vec2(cos(angle), sin(angle)) * radius;
-                    vec4 rgba = texture(grid_texture, world_to_grid(pos + dir));
+                    vec2 grid_uv = world_to_grid(pos + dir);
+                    vec4 rgba = texture(dynamic_grid, grid_uv);
                     float alpha =  (rgba.b - 0.5);
                     
                     
                     gradient -= normalize(dir) * gradient_weight * abs(alpha);
+                    collision -= normalize(dir) * gradient_weight * texture(static_grid, grid_uv).a;
                     
                     if(alpha >= 0.0) {
                         heading += rg_to_velocity(rgba.rg);
@@ -121,16 +125,18 @@ void fragment() {
             
             // normalize values
             gradient /= gradien_sum;
+            collision /= gradien_sum;
             heading /= (ANGLE_NUMSTEPS * RADIUS_NUM_STEPS);
             density /= (ANGLE_NUMSTEPS * RADIUS_NUM_STEPS);
             negative /= (ANGLE_NUMSTEPS * RADIUS_NUM_STEPS);
             
             float fear_factor = (1.0 + negative);
             
-            velocity = vec2(mod(TIME*UV.x*1389.0, 2.0) - 1.0,mod(TIME*UV.x*7821.0, 2.0) - 1.0) * 1.0;
+            velocity = vec2(mod(TIME*UV.x*1389.0, 2.0) - 1.0, mod(TIME*UV.x*7821.0, 2.0) - 1.0) * 1.0;
             velocity += gradient * rule_seperation;
             velocity += density * rule_cohesion * fear_factor;
             velocity += heading * rule_alignment;
+            velocity += collision * rule_seperation;
             
             if(target.z > 0.0) {
                 velocity += normalize(target.xy - pos) * rule_target;

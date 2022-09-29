@@ -19,8 +19,15 @@ func _ready():
     #$SheepMeshInstance.multimesh = $BoidsInstance.boids_multimesh
     $BoidsInstance.add_boids_with_spread($Player.position, 100, Vector2(300,300))
     #$BoidsInstance.set_target(Vector2(0,0))
-    $DebugGrdTexture.texture = $BoidsInstance.grid_texture
+    
+    var statricgrid : Texture = preload(\"res://assets/level1.png\")
+    $BoidsInstance.static_grid = statricgrid
+    
+    $DebugGrdTexture.texture = $BoidsInstance.dynamic_grid
     $DebugGrdTexture.rect_scale = Vector2(1,1) / $BoidsInstance.boids_spec.grid_resolution
+    $DebugStaticTexture.texture = $BoidsInstance.static_grid
+    $DebugStaticTexture.rect_scale =  $BoidsInstance.boids_spec.world_size / statricgrid.get_size()
+    
     $BoidsInstance.add_external_agent($Player, 24, true)
     $BoidsInstance.add_external_agent($Doggo, 64, false)
     
@@ -157,7 +164,13 @@ margin_bottom = 720.0
 rect_min_size = Vector2( 1280, 720 )
 color = Color( 0.286275, 0.490196, 0.345098, 1 )
 
-[node name="DebugGrdTexture" type="TextureRect" parent="."]
+[node name="DebugGrdTexture" type="TextureRect" parent="." groups=["debug_visu"]]
+visible = false
+margin_right = 40.0
+margin_bottom = 40.0
+flip_v = true
+
+[node name="DebugStaticTexture" type="TextureRect" parent="." groups=["debug_visu"]]
 visible = false
 margin_right = 40.0
 margin_bottom = 40.0
