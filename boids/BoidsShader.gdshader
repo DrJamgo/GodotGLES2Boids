@@ -89,8 +89,9 @@ void fragment() {
         else {
             float self = texture(dynamic_grid, world_to_grid(pos)).a;
             vec2 gradient = vec2(0.0,0.0);
-            vec2 collision = vec2(0.0,0.0);
+            vec2 repulsion = vec2(0.0,0.0);
             vec2 density  = vec2(0.0,0.0);
+            vec2 attraction = vec2(0.0,0.0);
             vec2 heading = vec2(0,0);
             float max_value = 0.0;
             float gradien_sum = 0.0;
@@ -106,11 +107,12 @@ void fragment() {
                     vec2 dir = vec2(cos(angle), sin(angle)) * radius;
                     vec2 grid_uv = world_to_grid(pos + dir);
                     vec4 rgba = texture(dynamic_grid, grid_uv);
+                    vec4 rgba_static = texture(static_grid, grid_uv);
                     float alpha =  (rgba.b - 0.5);
                     
-                    
                     gradient -= normalize(dir) * gradient_weight * abs(alpha);
-                    collision -= normalize(dir) * gradient_weight * texture(static_grid, grid_uv).a;
+                    repulsion -= normalize(dir) * gradient_weight * length(rgba_static.rb);
+                    attraction += normalize(dir) * rgba_static.g;
                     
                     if(alpha >= 0.0) {
                         heading += rg_to_velocity(rgba.rg);
@@ -125,10 +127,11 @@ void fragment() {
             
             // normalize values
             gradient /= gradien_sum;
-            collision /= gradien_sum;
+            repulsion /= gradien_sum;
             heading /= (ANGLE_NUMSTEPS * RADIUS_NUM_STEPS);
             density /= (ANGLE_NUMSTEPS * RADIUS_NUM_STEPS);
             negative /= (ANGLE_NUMSTEPS * RADIUS_NUM_STEPS);
+            attraction /= (ANGLE_NUMSTEPS * RADIUS_NUM_STEPS);
             
             float fear_factor = (1.0 + negative);
             
@@ -136,7 +139,10 @@ void fragment() {
             velocity += gradient * rule_seperation;
             velocity += density * rule_cohesion * fear_factor;
             velocity += heading * rule_alignment;
-            velocity += collision * rule_seperation;
+            
+            // extra behavour on static grid
+            velocity += attraction * rule_cohesion * max(0.0, 1.0 - negative * 4.0);
+            velocity += repulsion * rule_seperation;
             
             if(target.z > 0.0) {
                 velocity += normalize(target.xy - pos) * rule_target;
