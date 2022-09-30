@@ -1,0 +1,52 @@
+[gd_resource type="Shader" format=2]
+
+[resource]
+code = "shader_type canvas_item;
+render_mode blend_add, blend_premul_alpha;
+
+uniform int num_particles;
+uniform vec2 particles_size;
+uniform sampler2D particles_tex;
+
+varying float uv_step;
+varying float uv_max;
+
+void vertex()
+{
+    uv_step = 1.0 / particles_size.x;
+    uv_max = uv_step * float(num_particles);
+}
+
+void fragment()
+{
+    if(UV.x < 0.25) {
+        // count
+        COLOR = vec4(1,1,1,1)
+    }
+    else if(UV.x < 0.5) {
+        // min
+        vec4 min_value = vec4(1,1,1,1);
+        for(float U = 0.0; U < uv_max; U += uv_step) {
+            vec4 data = texture(particles_tex, vec2(U, UV.y));
+            min_value = min(min_value, data);
+        }
+        COLOR = min_value;
+    }
+    else if(UV.x < 0.75) {
+        vec4 max_value = vec4(0,0,0,0);
+        for(float U = 0.0; U < uv_max; U += uv_step) {
+            vec4 data = texture(particles_tex, vec2(U, UV.y));
+            max_value = max(max_value, data);
+        }
+        COLOR = max_value;
+    }
+    else {
+        vec4 avg_value = vec4(0,0,0,0);
+        for(float U = 0.0; U < uv_max; U += uv_step) {
+            vec4 data = texture(particles_tex, vec2(U, UV.y));
+            avg_value += data;
+        }
+        COLOR = avg_value / float(num_particles);
+    }
+}
+"

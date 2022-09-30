@@ -60,6 +60,6 @@ func velocity_to_rg(velocity : Vector2) -> Color:
 
 func rgba_to_world(color : Color) -> Vector2:
     var vector := Vector2(0,0)
-    vector.x = (color.r * 255.0 + color.g) * world_size.x / max_value.x
-    vector.y = (color.b * 255.0 + color.a) * world_size.y / max_value.y
+    vector.x = (color.r + color.g / 255.0) * world_size.x
+    vector.y = (color.b + color.a / 255.0) * world_size.y
     return vector

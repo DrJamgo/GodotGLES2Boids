@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=2]
+[gd_scene load_steps=25 format=2]
 
 [ext_resource path="res://boids/BoidsInstance.tscn" type="PackedScene" id=1]
 [ext_resource path="res://assets/sheep.png" type="Texture" id=2]
@@ -19,7 +19,6 @@ func _ready():
     #$SheepMeshInstance.multimesh = $BoidsInstance.boids_multimesh
     $BoidsInstance.add_boids_with_spread($Player.position, 100, Vector2(300,300))
     #$BoidsInstance.set_target(Vector2(0,0))
-    
     var statricgrid : Texture = preload(\"res://assets/level1.png\")
     $BoidsInstance.static_grid = statricgrid
     
@@ -45,7 +44,7 @@ func _ready():
     shader.set_shader_param(\"world_size\", boids_spec.world_size)
     shader.set_shader_param(\"state_texture\", $BoidsInstance.particles_texture)
     shader.set_shader_param(\"velocity_max\", boids_spec.velocity_max)
-
+    
 func _process(delta):
     $SheepMeshInstance.multimesh.visible_instance_count = $BoidsInstance.get_num_boids()
 
@@ -92,6 +91,23 @@ mesh = SubResource( 2 )
 [sub_resource type="AtlasTexture" id=6]
 atlas = ExtResource( 2 )
 region = Rect2( 0, 0, 9, 12 )
+
+[sub_resource type="GDScript" id=13]
+script/source = "extends Node2D
+
+func _process(delta):
+    update()
+
+func _draw():
+    draw_rect(get_node(\"../BoidsInstance\").boids_aabb, Color(1,1,1,1), false, 1.0, true)
+"
+
+[sub_resource type="GDScript" id=14]
+script/source = "extends ProgressBar
+
+func _process(delta):
+    value = get_node(\"../../BoidsInstance\").fullnes_avg
+"
 
 [sub_resource type="GDScript" id=9]
 script/source = "extends KinematicBody2D
@@ -184,6 +200,10 @@ material = SubResource( 5 )
 multimesh = SubResource( 3 )
 texture = SubResource( 6 )
 
+[node name="AABB" type="Node2D" parent="." groups=["debug_visu"]]
+visible = false
+script = SubResource( 13 )
+
 [node name="Panel" type="HBoxContainer" parent="."]
 rect_min_size = Vector2( 0, 24 )
 script = ExtResource( 10 )
@@ -204,6 +224,23 @@ visible = false
 margin_left = 334.0
 margin_right = 334.0
 margin_bottom = 40.0
+
+[node name="Label" type="Label" parent="Panel"]
+margin_left = 334.0
+margin_top = 13.0
+margin_right = 425.0
+margin_bottom = 27.0
+text = "Flock Feeding:"
+
+[node name="ProgressBar" type="ProgressBar" parent="Panel"]
+margin_left = 429.0
+margin_top = 13.0
+margin_right = 629.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 200, 0 )
+size_flags_vertical = 4
+max_value = 1.0
+script = SubResource( 14 )
 
 [node name="Doggo" type="KinematicBody2D" parent="."]
 position = Vector2( 156, 107 )

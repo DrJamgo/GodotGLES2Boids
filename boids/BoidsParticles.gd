@@ -50,7 +50,7 @@ func add_boids_with_spread(position : Vector2, amount : int, spread : Vector2):
             data.append(127)
             data.append(127)
             data.append(0)   # <- unused
-            data.append(255) # <- unused
+            data.append(0) # <- unused
         
         var image = Image.new()
         image.create_from_data(boids_to_add, 2, false, Image.FORMAT_RGBA8, data)
