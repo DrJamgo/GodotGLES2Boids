@@ -1,15 +1,15 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://icon.png" type="Texture" id=1]
 [ext_resource path="res://test/DeptHTestScene.gdshader" type="Shader" id=2]
+[ext_resource path="res://map/Level1.tscn" type="PackedScene" id=3]
 
 [sub_resource type="ShaderMaterial" id=10]
 shader = ExtResource( 2 )
-shader_param/transform = Basis( 1, 0, 0, 0, -0.707, 0, 0, 0.707, 1 )
 shader_param/tex = ExtResource( 1 )
 
 [sub_resource type="QuadMesh" id=6]
-size = Vector2( 32, -32 )
+size = Vector2( 32, 32 )
 
 [sub_resource type="MultiMesh" id=7]
 transform_format = 1
@@ -25,46 +25,62 @@ script/source = "extends MultiMeshInstance
 func _ready():
     multimesh.instance_count = 2
     
-    multimesh.set_instance_custom_data(1, Color(40,0,-200, 0))
+    multimesh.set_instance_custom_data(1, Color(40,200,0, 0))
     
     
 func _process(delta):
-    var ray_length = 1000.0;
     var mouse_pos = get_viewport().get_mouse_position()
     var camera = get_viewport().get_camera()
-    var from = camera.project_ray_origin(mouse_pos)
-    var to = from + camera.project_ray_normal(mouse_pos) * ray_length
-    var space_state = get_world().get_direct_space_state()
-    # use global coordinates, not local to node
-    var result = space_state.intersect_ray( from, to )
-    if not result.empty():
+    var world_pos = camera.project_position(mouse_pos, 100.0)
+    multimesh.set_instance_custom_data(0, Color(world_pos.x, world_pos.z, 0, 0))
+    $Label3D.text = str(mouse_pos)
+    $Label3D.text += \" \\n \"
+    $Label3D.text += str(world_pos)
 
-        multimesh.set_instance_custom_data(0, Color(result[\"position\"].x, result[\"position\"].y, result[\"position\"].z, 0))
-    
-    pass
 "
 
-[sub_resource type="PlaneShape" id=9]
+[sub_resource type="ViewportTexture" id=11]
+viewport_path = NodePath("Viewport")
 
 [node name="DeptHTestScene" type="Spatial"]
 
 [node name="MultiMeshInstance" type="MultiMeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.707, 0, 0, -0.707, 1, 0, 0, 0 )
 material_override = SubResource( 10 )
 cast_shadow = 0
 multimesh = SubResource( 7 )
 script = SubResource( 3 )
 
+[node name="Label3D" type="Label3D" parent="MultiMeshInstance"]
+transform = Transform( 1, 0, 0, 0, -0.014765, 0.999891, 0, -0.707137, -0.010442, 56.3147, 55.6781, 80.2143 )
+pixel_size = 1.0
+horizontal_alignment = 0
+
+[node name="Spatial" type="Spatial" parent="."]
+
+[node name="Sprite3D" type="Sprite3D" parent="Spatial"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 320, 0, 180 )
+pixel_size = 0.5
+axis = 1
+double_sided = false
+render_priority = -1
+texture = SubResource( 11 )
+
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 90.8712, -90.0939 )
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 320, 100, 180 )
 projection = 1
 current = true
 fov = 50.625
-size = 256.0
+size = 360.0
 near = 10.0
-far = 200.0
+far = 400.0
 
-[node name="StaticBody" type="StaticBody" parent="."]
+[node name="Viewport" type="Viewport" parent="."]
+size = Vector2( 1280, 720 )
+disable_3d = true
+usage = 1
+render_target_v_flip = true
 
-[node name="CollisionShape" type="CollisionShape" parent="StaticBody"]
-transform = Transform( 10, 0, 0, 0, 1, 0, 0, 0, 10, 0, 0, 0 )
-shape = SubResource( 9 )
+[node name="Node2D" type="Node2D" parent="Viewport"]
+
+[node name="TileMap" parent="Viewport/Node2D" instance=ExtResource( 3 )]
