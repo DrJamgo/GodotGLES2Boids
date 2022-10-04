@@ -1,0 +1,70 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://icon.png" type="Texture" id=1]
+[ext_resource path="res://test/DeptHTestScene.gdshader" type="Shader" id=2]
+
+[sub_resource type="ShaderMaterial" id=10]
+shader = ExtResource( 2 )
+shader_param/transform = Basis( 1, 0, 0, 0, -0.707, 0, 0, 0.707, 1 )
+shader_param/tex = ExtResource( 1 )
+
+[sub_resource type="QuadMesh" id=6]
+size = Vector2( 32, -32 )
+
+[sub_resource type="MultiMesh" id=7]
+transform_format = 1
+custom_data_format = 2
+instance_count = 1
+mesh = SubResource( 6 )
+transform_array = PoolVector3Array( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+custom_data_array = PoolColorArray( 0, 0, 0, 0 )
+
+[sub_resource type="GDScript" id=3]
+script/source = "extends MultiMeshInstance
+
+func _ready():
+    multimesh.instance_count = 2
+    
+    multimesh.set_instance_custom_data(1, Color(40,0,-200, 0))
+    
+    
+func _process(delta):
+    var ray_length = 1000.0;
+    var mouse_pos = get_viewport().get_mouse_position()
+    var camera = get_viewport().get_camera()
+    var from = camera.project_ray_origin(mouse_pos)
+    var to = from + camera.project_ray_normal(mouse_pos) * ray_length
+    var space_state = get_world().get_direct_space_state()
+    # use global coordinates, not local to node
+    var result = space_state.intersect_ray( from, to )
+    if not result.empty():
+
+        multimesh.set_instance_custom_data(0, Color(result[\"position\"].x, result[\"position\"].y, result[\"position\"].z, 0))
+    
+    pass
+"
+
+[sub_resource type="PlaneShape" id=9]
+
+[node name="DeptHTestScene" type="Spatial"]
+
+[node name="MultiMeshInstance" type="MultiMeshInstance" parent="."]
+material_override = SubResource( 10 )
+cast_shadow = 0
+multimesh = SubResource( 7 )
+script = SubResource( 3 )
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 90.8712, -90.0939 )
+projection = 1
+current = true
+fov = 50.625
+size = 256.0
+near = 10.0
+far = 200.0
+
+[node name="StaticBody" type="StaticBody" parent="."]
+
+[node name="CollisionShape" type="CollisionShape" parent="StaticBody"]
+transform = Transform( 10, 0, 0, 0, 1, 0, 0, 0, 10, 0, 0, 0 )
+shape = SubResource( 9 )
