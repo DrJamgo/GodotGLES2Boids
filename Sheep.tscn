@@ -204,6 +204,7 @@ color = Color( 0.286275, 0.490196, 0.345098, 1 )
 
 [node name="DebugGrdTexture" type="TextureRect" parent="." groups=["debug_visu"]]
 visible = false
+modulate = Color( 1, 1, 1, 0.509804 )
 margin_right = 40.0
 margin_bottom = 40.0
 flip_v = true
