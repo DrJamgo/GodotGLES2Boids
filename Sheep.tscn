@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=2]
+[gd_scene load_steps=27 format=2]
 
 [ext_resource path="res://boids/BoidsInstance.tscn" type="PackedScene" id=1]
 [ext_resource path="res://assets/sheep.png" type="Texture" id=2]
@@ -132,10 +132,11 @@ func _physics_process(delta):
 "
 
 [sub_resource type="CircleShape2D" id=7]
+radius = 16.0
 
 [sub_resource type="AtlasTexture" id=8]
 atlas = ExtResource( 3 )
-region = Rect2( 0, 0, 16, 16 )
+region = Rect2( 0, 0, 24, 24 )
 
 [sub_resource type="GDScript" id=11]
 script/source = "extends KinematicBody2D
@@ -163,10 +164,15 @@ func _physics_process(delta):
         velocity.y = 0
 
     move_and_slide(velocity, Vector2(0, 0))
+    
+    position = position.round()
 
     if velocity.length() > 0.0:
         $Tutorial.visible = false
 "
+
+[sub_resource type="CircleShape2D" id=15]
+radius = 13.0384
 
 [sub_resource type="AtlasTexture" id=10]
 atlas = ExtResource( 6 )
@@ -192,6 +198,7 @@ flip_v = true
 
 [node name="DebugStaticTexture" type="TextureRect" parent="." groups=["debug_visu"]]
 visible = false
+modulate = Color( 1, 1, 1, 0.223529 )
 margin_right = 40.0
 margin_bottom = 40.0
 flip_v = true
@@ -247,7 +254,7 @@ max_value = 1.0
 script = SubResource( 14 )
 
 [node name="Doggo" type="KinematicBody2D" parent="."]
-position = Vector2( 156, 107 )
+position = Vector2( 452, 325 )
 script = SubResource( 9 )
 
 [node name="Arrow" type="Node2D" parent="Doggo"]
@@ -262,9 +269,9 @@ texture = ExtResource( 9 )
 shape = SubResource( 7 )
 
 [node name="Sprite" type="Sprite" parent="Doggo"]
-scale = Vector2( 3, 3 )
+scale = Vector2( 2, 2 )
 texture = SubResource( 8 )
-offset = Vector2( 0, -4 )
+offset = Vector2( 0, -6 )
 script = ExtResource( 7 )
 
 [node name="Label2" type="Label" parent="Doggo" groups=["debug_visu"]]
@@ -277,7 +284,7 @@ margin_bottom = -20.0
 text = "doggo is scary"
 
 [node name="Player" type="KinematicBody2D" parent="."]
-position = Vector2( 448, 443 )
+position = Vector2( 420, 360 )
 script = SubResource( 11 )
 
 [node name="Tutorial" type="Node2D" parent="Player"]
@@ -300,12 +307,12 @@ scale = Vector2( 0.252494, 0.252494 )
 texture = ExtResource( 11 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
-shape = SubResource( 7 )
+shape = SubResource( 15 )
 
 [node name="Sprite" type="Sprite" parent="Player"]
 scale = Vector2( 2, 2 )
 texture = SubResource( 10 )
-offset = Vector2( 0, -4 )
+offset = Vector2( 0, -8 )
 script = ExtResource( 7 )
 
 [node name="Label" type="Label" parent="Player" groups=["debug_visu"]]
