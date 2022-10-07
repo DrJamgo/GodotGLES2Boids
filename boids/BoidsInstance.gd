@@ -50,8 +50,8 @@ func get_num_boids() -> int:
 func add_boids_with_spread(position : Vector2, amount : int, spread : Vector2):
     $BoidsParticles.add_boids_with_spread(position, amount, spread)
     
-func add_external_agent(node : Node2D, radius : float, isFriend : bool):
-    $BoidsGrid.add_external_agent(node, radius, isFriend)
+func add_external_agent(radius : float, isFriend : bool) -> BoidsExternalAgent2D:
+    return $BoidsGrid.add_external_agent(radius, isFriend)
     
 func set_static_grid(texture : Texture):
     static_grid = texture

@@ -28,22 +28,19 @@ vec2 rgba_to_world(in vec4 color)
 }
 
 void vertex() {
-    //VERTEX *= 2.0;
+    //VERTEX *= 1.414;
     VERTEX.xz += rgba_to_world(texture(state_texture, INSTANCE_CUSTOM.xy));
     //VERTEX = (WORLD_MATRIX * vec4(VERTEX, 1.0)).xyz;
     vec4 color2 = texture(state_texture, INSTANCE_CUSTOM.xy - vec2(0,0.5));
     velocity = rg_to_velocity(color2.rg);
     eating = color2.a;
-    //VERTEX.y += sin(color2.b * 2.0 * PI) * (length(velocity) / velocity_max) * 2.0;
-    //VERTEX.y -= 12.0;
-    
+    VERTEX.z += sin(color2.b * 2.0 * PI) * (length(velocity) / velocity_max) * 2.0;
 }
 
 void fragment() {
     
     vec2 uv = UV;
     uv.x /= 9.0;
-    uv.y = 1.0 - uv.y;
     float frame = 0.0;
     if(length(velocity) > 0.0) {
         float angle = atan(velocity.y, velocity.x) + PI;

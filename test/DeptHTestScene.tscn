@@ -1,8 +1,35 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=22 format=2]
 
 [ext_resource path="res://assets/sheep.png" type="Texture" id=1]
 [ext_resource path="res://test/DeptHTestScene.gdshader" type="Shader" id=2]
-[ext_resource path="res://Sheep.tscn" type="PackedScene" id=3]
+[ext_resource path="res://8FrameSprite.gd" type="Script" id=4]
+[ext_resource path="res://assets/player.png" type="Texture" id=6]
+[ext_resource path="res://test/DeptHTestScene.gd" type="Script" id=7]
+[ext_resource path="res://map/Level1.tscn" type="PackedScene" id=8]
+[ext_resource path="res://boids/BoidsInstance.tscn" type="PackedScene" id=9]
+[ext_resource path="res://boids/BoidsSpec.gd" type="Script" id=10]
+[ext_resource path="res://assets/doggo.png" type="Texture" id=12]
+
+[sub_resource type="Resource" id=16]
+resource_local_to_scene = true
+script = ExtResource( 10 )
+world_size = Vector2( 1280, 720 )
+velocity_min = 25.0
+velocity_max = 100.0
+grid_resolution = 0.1
+boids_capacity = 1024
+boids_size = 10.0
+boids_vision = 40.0
+rule_cohesion = 100.0
+rule_seperation = 200.0
+rule_alignment = 1.0
+rule_target = 0.3
+rule_colision = 200.0
+grid_power = 1.5
+seperation_power = 1.5
+
+[sub_resource type="ViewportTexture" id=11]
+viewport_path = NodePath("Viewport")
 
 [sub_resource type="AtlasTexture" id=12]
 flags = 1
@@ -18,6 +45,7 @@ shader_param/tex = SubResource( 12 )
 
 [sub_resource type="QuadMesh" id=6]
 size = Vector2( 32, 32 )
+center_offset = Vector3( 0, 16, 0 )
 
 [sub_resource type="MultiMesh" id=7]
 transform_format = 1
@@ -27,34 +55,93 @@ mesh = SubResource( 6 )
 transform_array = PoolVector3Array( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 custom_data_array = PoolColorArray( 0, 0, 0, 0 )
 
-[sub_resource type="GDScript" id=3]
-script/source = "extends MultiMeshInstance
+[sub_resource type="GDScript" id=13]
+script/source = "extends KinematicBody
 
-func _ready():
-    
-    var boids_instance = get_node(\"../Viewport/Sheep/BoidsInstance\")
-    var boids_spec = boids_instance.boids_spec
-    
-    var shader := (material_override as ShaderMaterial)
-    shader.set_shader_param(\"grid_size\", boids_spec.grid_size)
-    shader.set_shader_param(\"world_size\", boids_spec.world_size)
-    shader.set_shader_param(\"state_texture\", boids_instance.particles_texture)
-    shader.set_shader_param(\"velocity_max\", boids_spec.velocity_max)
-    
-    
-    multimesh = get_node(\"../Viewport/Sheep/SheepMeshInstance\").multimesh
-    pass
-    #multimesh.instance_count = 2
-    #multimesh.set_instance_custom_data(1, Color(400,200,0, 0))
+const WALK_SPEED = 50
+var velocity = Vector3()
+var boids_agent : BoidsExternalAgent2D
+
+func get_2d_position() -> Vector2:
+    return Vector2(transform.origin.x, transform.origin.z)
 
 func _process(delta):
-    pass
+    boids_agent.world_position = get_2d_position()
+    $Sprite.velocity = velocity
+    
+func _physics_process(delta):
+
+    if Input.is_action_pressed(\"ui_left\"):
+        velocity.x = -WALK_SPEED
+    elif Input.is_action_pressed(\"ui_right\"):
+        velocity.x =  WALK_SPEED
+    else:
+        velocity.x = 0
+        
+    if Input.is_action_pressed(\"ui_up\"):
+        velocity.z = -WALK_SPEED
+    elif Input.is_action_pressed(\"ui_down\"):
+        velocity.z =  WALK_SPEED
+    else:
+        velocity.z = 0
+
+    move_and_slide(velocity, Vector3(0, 1, 0))
+
+    #if velocity.length() > 0.0:
+    #    $Tutorial.visible = false
 "
 
-[sub_resource type="ViewportTexture" id=11]
-viewport_path = NodePath("Viewport")
+[sub_resource type="AtlasTexture" id=15]
+flags = 2
+atlas = ExtResource( 6 )
+region = Rect2( 0, 0, 24, 24 )
+
+[sub_resource type="CylinderShape" id=20]
+height = 24.0
+radius = 6.0
+
+[sub_resource type="GDScript" id=17]
+script/source = "extends KinematicBody
+
+const WALK_SPEED = 200
+var velocity = Vector2()
+var boids_agent : BoidsExternalAgent2D
+
+#func _draw():
+#    draw_arc(Vector2(0,0), 64.0, -PI, PI, 40, Color(1.0,1.0,1.0,0.2), 2.0)
+
+func _process(delta):
+    boids_agent.world_position = Vector2(transform.origin.x, transform.origin.z)
+    $Sprite.velocity = velocity
+    #$Arrow.rotation = atan2(velocity.y, velocity.x)
+    
+func _physics_process(delta):
+    var mouse = get_viewport().get_mouse_position()
+    var camera = get_viewport().get_camera()
+    var mouse_3d = camera.project_position(mouse, abs(camera.transform.origin.z))
+    velocity = mouse_3d - transform.origin
+    if(velocity.length() > WALK_SPEED):
+        velocity = velocity.normalized() * WALK_SPEED 
+
+    move_and_slide(velocity, Vector3(0, 1, 0))
+    velocity.y = 0
+    transform.origin.y = 0.0
+"
+
+[sub_resource type="AtlasTexture" id=19]
+flags = 2
+atlas = ExtResource( 12 )
+region = Rect2( 0, 0, 24, 24 )
+
+[sub_resource type="CylinderShape" id=21]
+height = 16.0
+radius = 8.0
 
 [node name="DeptHTestScene" type="Spatial"]
+script = ExtResource( 7 )
+
+[node name="BoidsInstance" parent="." instance=ExtResource( 9 )]
+boids_spec = SubResource( 16 )
 
 [node name="Viewport" type="Viewport" parent="."]
 size = Vector2( 1280, 720 )
@@ -62,35 +149,76 @@ disable_3d = true
 usage = 1
 render_target_v_flip = true
 
-[node name="Sheep" parent="Viewport" instance=ExtResource( 3 )]
+[node name="TileMap" parent="Viewport" instance=ExtResource( 8 )]
 
-[node name="MultiMeshInstance" type="MultiMeshInstance" parent="."]
-transform = Transform( 0.5, 0, 0, 0, 0.354, 0, 0, -0.354, 0.5, 0, 0, 0 )
-material_override = SubResource( 10 )
-cast_shadow = 0
-multimesh = SubResource( 7 )
-script = SubResource( 3 )
+[node name="DebugGrdTexture" type="Sprite3D" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0 )
+visible = false
+centered = false
+modulate = Color( 1, 1, 1, 0.47451 )
+pixel_size = 10.0
+axis = 1
 
 [node name="Spatial" type="Spatial" parent="."]
 
 [node name="Sprite3D" type="Sprite3D" parent="Spatial"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 320, 0, 180 )
-modulate = Color( 1, 1, 1, 0.392157 )
-pixel_size = 0.5
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0 )
+centered = false
+flip_v = true
+pixel_size = 1.0
 axis = 1
 double_sided = false
 render_priority = -1
 texture = SubResource( 11 )
 
+[node name="SheepMeshInstance" type="MultiMeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, -1, 1, 0, 0, 0 )
+material_override = SubResource( 10 )
+cast_shadow = 0
+multimesh = SubResource( 7 )
+
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 320, 100, 180 )
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 403.983, 100, 366.811 )
 projection = 1
 current = true
 fov = 50.625
-size = 360.0
-far = 200.0
+size = 720.0
+near = 50.0
+far = 110.0
 
 [node name="Label3D" type="Label3D" parent="Camera"]
 transform = Transform( 1, 0, 0, 0, 0.696698, 0.717365, 0, -0.0104388, 0.706923, 0, 0, -90 )
 pixel_size = 1.0
 horizontal_alignment = 0
+
+[node name="Player" type="KinematicBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 403.983, 0, 366.811 )
+script = SubResource( 13 )
+
+[node name="Sprite" type="Sprite3D" parent="Player"]
+transform = Transform( 2, 0, 0, 0, 2, -2, 0, 0, 2, 0, 7, 0 )
+offset = Vector2( 0, 8 )
+pixel_size = 1.0
+axis = 1
+alpha_cut = 1
+texture = SubResource( 15 )
+script = ExtResource( 4 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Player"]
+shape = SubResource( 20 )
+
+[node name="Doggo" type="KinematicBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 171.964, 0, 188.815 )
+script = SubResource( 17 )
+
+[node name="Sprite" type="Sprite3D" parent="Doggo"]
+transform = Transform( 2, 0, 0, 0, 2, -2, 0, 0, 2, 0, 12, 0 )
+offset = Vector2( 0, 6 )
+pixel_size = 1.0
+axis = 1
+alpha_cut = 1
+texture = SubResource( 19 )
+script = ExtResource( 4 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Doggo"]
+shape = SubResource( 21 )
