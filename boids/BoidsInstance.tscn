@@ -49,7 +49,10 @@ size = Vector2( 32, 32 )
 
 [sub_resource type="MultiMesh" id=3]
 custom_data_format = 2
+instance_count = 4
 mesh = SubResource( 2 )
+transform_2d_array = PoolVector2Array( 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0 )
+custom_data_array = PoolColorArray( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 )
 
 [sub_resource type="ShaderMaterial" id=14]
 resource_local_to_scene = true

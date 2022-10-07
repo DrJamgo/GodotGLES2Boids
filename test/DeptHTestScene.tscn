@@ -1,12 +1,20 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
-[ext_resource path="res://icon.png" type="Texture" id=1]
+[ext_resource path="res://assets/sheep.png" type="Texture" id=1]
 [ext_resource path="res://test/DeptHTestScene.gdshader" type="Shader" id=2]
-[ext_resource path="res://map/Level1.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Sheep.tscn" type="PackedScene" id=3]
+
+[sub_resource type="AtlasTexture" id=12]
+flags = 1
+atlas = ExtResource( 1 )
+region = Rect2( 0, 24, 24, -24 )
 
 [sub_resource type="ShaderMaterial" id=10]
 shader = ExtResource( 2 )
-shader_param/tex = ExtResource( 1 )
+shader_param/grid_size = null
+shader_param/world_size = null
+shader_param/velocity_max = null
+shader_param/tex = SubResource( 12 )
 
 [sub_resource type="QuadMesh" id=6]
 size = Vector2( 32, 32 )
@@ -23,19 +31,24 @@ custom_data_array = PoolColorArray( 0, 0, 0, 0 )
 script/source = "extends MultiMeshInstance
 
 func _ready():
-    multimesh.instance_count = 2
-    multimesh.set_instance_custom_data(1, Color(400,200,0, 0))
     
-func _process(delta):
-    var mouse_pos = get_viewport().get_mouse_position()
-    var camera = get_viewport().get_camera()
-    var world_pos = camera.project_position(mouse_pos, 100.0)
-    multimesh.set_instance_custom_data(0, Color(world_pos.x, world_pos.z, 0, 0))
-    var label_node = get_node(\"../Camera/Label3D\")
-    label_node.text = str(mouse_pos)
-    label_node.text += \"\\n\"
-    label_node.text += str(world_pos)
+    var boids_instance = get_node(\"../Viewport/Sheep/BoidsInstance\")
+    var boids_spec = boids_instance.boids_spec
+    
+    var shader := (material_override as ShaderMaterial)
+    shader.set_shader_param(\"grid_size\", boids_spec.grid_size)
+    shader.set_shader_param(\"world_size\", boids_spec.world_size)
+    shader.set_shader_param(\"state_texture\", boids_instance.particles_texture)
+    shader.set_shader_param(\"velocity_max\", boids_spec.velocity_max)
+    
+    
+    multimesh = get_node(\"../Viewport/Sheep/SheepMeshInstance\").multimesh
+    pass
+    #multimesh.instance_count = 2
+    #multimesh.set_instance_custom_data(1, Color(400,200,0, 0))
 
+func _process(delta):
+    pass
 "
 
 [sub_resource type="ViewportTexture" id=11]
@@ -43,8 +56,16 @@ viewport_path = NodePath("Viewport")
 
 [node name="DeptHTestScene" type="Spatial"]
 
+[node name="Viewport" type="Viewport" parent="."]
+size = Vector2( 1280, 720 )
+disable_3d = true
+usage = 1
+render_target_v_flip = true
+
+[node name="Sheep" parent="Viewport" instance=ExtResource( 3 )]
+
 [node name="MultiMeshInstance" type="MultiMeshInstance" parent="."]
-transform = Transform( 1, 0, 0, 0, 0.707, 0, 0, -0.707, 1, 0, 0, 0 )
+transform = Transform( 0.5, 0, 0, 0, 0.354, 0, 0, -0.354, 0.5, 0, 0, 0 )
 material_override = SubResource( 10 )
 cast_shadow = 0
 multimesh = SubResource( 7 )
@@ -54,6 +75,7 @@ script = SubResource( 3 )
 
 [node name="Sprite3D" type="Sprite3D" parent="Spatial"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 320, 0, 180 )
+modulate = Color( 1, 1, 1, 0.392157 )
 pixel_size = 0.5
 axis = 1
 double_sided = false
@@ -66,19 +88,9 @@ projection = 1
 current = true
 fov = 50.625
 size = 360.0
-far = 110.0
+far = 200.0
 
 [node name="Label3D" type="Label3D" parent="Camera"]
 transform = Transform( 1, 0, 0, 0, 0.696698, 0.717365, 0, -0.0104388, 0.706923, 0, 0, -90 )
 pixel_size = 1.0
 horizontal_alignment = 0
-
-[node name="Viewport" type="Viewport" parent="."]
-size = Vector2( 1280, 720 )
-disable_3d = true
-usage = 1
-render_target_v_flip = true
-
-[node name="Node2D" type="Node2D" parent="Viewport"]
-
-[node name="TileMap" parent="Viewport/Node2D" instance=ExtResource( 3 )]
