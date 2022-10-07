@@ -135,7 +135,7 @@ func _physics_process(delta):
 
 [sub_resource type="AtlasTexture" id=8]
 atlas = ExtResource( 3 )
-region = Rect2( 0, 0, 9, 12 )
+region = Rect2( 0, 0, 16, 16 )
 
 [sub_resource type="GDScript" id=11]
 script/source = "extends KinematicBody2D
@@ -170,7 +170,7 @@ func _physics_process(delta):
 
 [sub_resource type="AtlasTexture" id=10]
 atlas = ExtResource( 6 )
-region = Rect2( 0, 0, 9, 12 )
+region = Rect2( 0, 0, 16, 16 )
 
 [node name="Sheep" type="Node2D"]
 script = SubResource( 1 )
@@ -262,7 +262,7 @@ texture = ExtResource( 9 )
 shape = SubResource( 7 )
 
 [node name="Sprite" type="Sprite" parent="Doggo"]
-scale = Vector2( 4, 4 )
+scale = Vector2( 3, 3 )
 texture = SubResource( 8 )
 offset = Vector2( 0, -4 )
 script = ExtResource( 7 )
@@ -303,7 +303,7 @@ texture = ExtResource( 11 )
 shape = SubResource( 7 )
 
 [node name="Sprite" type="Sprite" parent="Player"]
-scale = Vector2( 4, 4 )
+scale = Vector2( 3, 3 )
 texture = SubResource( 10 )
 offset = Vector2( 0, -4 )
 script = ExtResource( 7 )
