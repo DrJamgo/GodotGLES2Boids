@@ -1,5 +1,5 @@
 shader_type spatial;
-render_mode cull_disabled, depth_draw_always, unshaded;
+render_mode world_vertex_coords, cull_disabled, depth_draw_always, unshaded;
 
 uniform sampler2D state_texture;
 uniform vec2 grid_size;
@@ -28,13 +28,11 @@ vec2 rgba_to_world(in vec4 color)
 }
 
 void vertex() {
-    //VERTEX *= 1.414;
     VERTEX.xz += rgba_to_world(texture(state_texture, INSTANCE_CUSTOM.xy));
-    //VERTEX = (WORLD_MATRIX * vec4(VERTEX, 1.0)).xyz;
     vec4 color2 = texture(state_texture, INSTANCE_CUSTOM.xy - vec2(0,0.5));
     velocity = rg_to_velocity(color2.rg);
     eating = color2.a;
-    VERTEX.z += sin(color2.b * 2.0 * PI) * (length(velocity) / velocity_max) * 2.0;
+    VERTEX.y += sin(color2.b * 2.0 * PI) * (length(velocity) / velocity_max) * 2.0;
 }
 
 void fragment() {
@@ -52,8 +50,8 @@ void fragment() {
     uv.x += frame / 9.0;
 
     vec4 color = texture(tex, uv);
-    ALBEDO = color.rgb * color.a;
-    ALPHA = color.a;
     if (color.a == 0.0)
         discard;
+    ALBEDO = color.rgb * color.a;
+    ALPHA = color.a;
 }

@@ -4,6 +4,7 @@ func _ready():
     #$SheepMeshInstance.multimesh = $BoidsInstance.boids_multimesh
 
     #$BoidsInstance.set_target(Vector2(0,0))
+    var spec : BoidsSpec = $BoidsInstance.boids_spec
     var statricgrid : Texture = preload("res://assets/level1.png")
     $BoidsInstance.static_grid = statricgrid
     
@@ -23,7 +24,7 @@ func _ready():
     
     #$Panel/Sliders.setup(boids_spec)
     $SheepMeshInstance.multimesh.instance_count = boids_multimesh.instance_count
-    
+
     for index in range(0, boids_multimesh.instance_count):
         $SheepMeshInstance.multimesh.set_instance_custom_data(index, boids_multimesh.get_instance_custom_data(index))
     
@@ -34,6 +35,9 @@ func _ready():
     shader.set_shader_param("velocity_max", boids_spec.velocity_max)
     
 func _process(delta):
+    var aabb = $BoidsInstance.boids_aabb
+    $SheepMeshInstance.set_custom_aabb(AABB(Vector3(aabb.position.x,0,aabb.position.y),
+                                            Vector3(aabb.size.x,0,aabb.size.y)))
     $SheepMeshInstance.multimesh.visible_instance_count = $BoidsInstance.get_num_boids()
 
 func _physics_process(delta):

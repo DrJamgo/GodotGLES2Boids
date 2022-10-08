@@ -44,8 +44,8 @@ shader_param/velocity_max = null
 shader_param/tex = SubResource( 12 )
 
 [sub_resource type="QuadMesh" id=6]
-size = Vector2( 32, 32 )
-center_offset = Vector3( 0, 16, 0 )
+size = Vector2( 48, 48 )
+center_offset = Vector3( 0, 24, 0 )
 
 [sub_resource type="MultiMesh" id=7]
 transform_format = 1
@@ -85,10 +85,7 @@ func _physics_process(delta):
     else:
         velocity.z = 0
 
-    move_and_slide(velocity, Vector3(0, 1, 0))
-
-    #if velocity.length() > 0.0:
-    #    $Tutorial.visible = false
+    move_and_slide(velocity, Vector3(0, -1, 0))
 "
 
 [sub_resource type="AtlasTexture" id=15]
@@ -152,12 +149,12 @@ render_target_v_flip = true
 [node name="TileMap" parent="Viewport" instance=ExtResource( 8 )]
 
 [node name="DebugGrdTexture" type="Sprite3D" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0 )
-visible = false
+transform = Transform( 1, 8.74228e-08, 0, -8.74228e-08, 1, 0, 0, 0, -1, 0, 1, 0 )
 centered = false
 modulate = Color( 1, 1, 1, 0.47451 )
 pixel_size = 10.0
 axis = 1
+no_depth_test = true
 
 [node name="Spatial" type="Spatial" parent="."]
 
@@ -167,32 +164,21 @@ centered = false
 flip_v = true
 pixel_size = 1.0
 axis = 1
-double_sided = false
-render_priority = -1
 texture = SubResource( 11 )
 
 [node name="SheepMeshInstance" type="MultiMeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, -1, 1, 0, 0, 0 )
+portal_mode = 3
+allow_merging = false
 material_override = SubResource( 10 )
 cast_shadow = 0
+generate_lightmap = false
 multimesh = SubResource( 7 )
-
-[node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 403.983, 100, 366.811 )
-projection = 1
-current = true
-fov = 50.625
-size = 720.0
-near = 50.0
-far = 110.0
-
-[node name="Label3D" type="Label3D" parent="Camera"]
-transform = Transform( 1, 0, 0, 0, 0.696698, 0.717365, 0, -0.0104388, 0.706923, 0, 0, -90 )
-pixel_size = 1.0
-horizontal_alignment = 0
 
 [node name="Player" type="KinematicBody" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 403.983, 0, 366.811 )
+axis_lock_motion_y = true
+move_lock_y = true
 script = SubResource( 13 )
 
 [node name="Sprite" type="Sprite3D" parent="Player"]
@@ -207,8 +193,19 @@ script = ExtResource( 4 )
 [node name="CollisionShape" type="CollisionShape" parent="Player"]
 shape = SubResource( 20 )
 
+[node name="Camera" type="Camera" parent="Player"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 100, 0 )
+projection = 1
+current = true
+fov = 50.625
+size = 720.0
+near = 10.0
+far = 120.0
+
 [node name="Doggo" type="KinematicBody" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 171.964, 0, 188.815 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 280.019, 0, 252.014 )
+axis_lock_motion_y = true
+move_lock_y = true
 script = SubResource( 17 )
 
 [node name="Sprite" type="Sprite3D" parent="Doggo"]
