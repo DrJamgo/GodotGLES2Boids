@@ -89,7 +89,6 @@ func _physics_process(delta):
 "
 
 [sub_resource type="AtlasTexture" id=15]
-flags = 2
 atlas = ExtResource( 6 )
 region = Rect2( 0, 0, 24, 24 )
 
@@ -126,7 +125,6 @@ func _physics_process(delta):
 "
 
 [sub_resource type="AtlasTexture" id=19]
-flags = 2
 atlas = ExtResource( 12 )
 region = Rect2( 0, 0, 24, 24 )
 

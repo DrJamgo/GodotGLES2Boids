@@ -14,8 +14,8 @@ func _ready():
     #$DebugStaticTexture.texture = $BoidsInstance.static_grid
     #$DebugStaticTexture.rect_scale =  $BoidsInstance.boids_spec.world_size / statricgrid.get_size()
     
-    $Player.boids_agent = $BoidsInstance.add_external_agent(24, true)
-    $Doggo.boids_agent = $BoidsInstance.add_external_agent(64, false)
+    $Player.boids_agent = $BoidsInstance.add_external_agent(32, true)
+    $Doggo.boids_agent = $BoidsInstance.add_external_agent(80, false)
     
     var boids_spec : BoidsSpec = $BoidsInstance.boids_spec
     var boids_multimesh = $BoidsInstance.boids_multimesh.multimesh
