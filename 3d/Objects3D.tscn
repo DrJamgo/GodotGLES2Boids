@@ -1,0 +1,63 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://3d/SheepMeshInstance.gd" type="Script" id=1]
+[ext_resource path="res://icon.png" type="Texture" id=2]
+[ext_resource path="res://3d/SheepMeshInstance.gdshader" type="Shader" id=3]
+[ext_resource path="res://assets/sheep.png" type="Texture" id=4]
+[ext_resource path="res://3d/Objects3D.gd" type="Script" id=5]
+
+[sub_resource type="ShaderMaterial" id=20]
+shader = ExtResource( 3 )
+shader_param/grid_size = null
+shader_param/world_size = null
+shader_param/velocity_max = null
+shader_param/tex = ExtResource( 4 )
+
+[sub_resource type="QuadMesh" id=17]
+size = Vector2( 24, 24 )
+
+[sub_resource type="MultiMesh" id=18]
+transform_format = 1
+custom_data_format = 2
+mesh = SubResource( 17 )
+
+[sub_resource type="SpatialMaterial" id=21]
+flags_transparent = true
+flags_unshaded = true
+flags_no_depth_test = true
+albedo_texture = ExtResource( 4 )
+
+[sub_resource type="AtlasTexture" id=22]
+flags = 3
+atlas = ExtResource( 4 )
+region = Rect2( 0, 0, 24, 24 )
+
+[node name="Objects3D" type="Spatial"]
+script = ExtResource( 5 )
+
+[node name="MultiMeshInstance" type="MultiMeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, -1, 1, 0, 12, 0 )
+material_override = SubResource( 20 )
+multimesh = SubResource( 18 )
+script = ExtResource( 1 )
+boids_instance_path = NodePath("../../../BoidsInstance")
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+visible = false
+material_override = SubResource( 21 )
+pixel_size = 1.0
+axis = 1
+texture = SubResource( 22 )
+
+[node name="Sprite3D2" type="Sprite3D" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 217.047, 0, 186.017 )
+pixel_size = 1.0
+axis = 1
+texture = ExtResource( 2 )
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 100, 0 )
+projection = 1
+current = true
+size = 360.0
+far = 110.0

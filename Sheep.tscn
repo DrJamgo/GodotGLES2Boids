@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=2]
+[gd_scene load_steps=30 format=2]
 
 [ext_resource path="res://boids/BoidsInstance.tscn" type="PackedScene" id=1]
 [ext_resource path="res://assets/sheep.png" type="Texture" id=2]
@@ -12,11 +12,15 @@
 [ext_resource path="res://Panel.gd" type="Script" id=10]
 [ext_resource path="res://assets/move.png" type="Texture" id=11]
 [ext_resource path="res://map/LPC_Forest.tres" type="TileSet" id=12]
+[ext_resource path="res://SheepMeshInstance2D.gd" type="Script" id=13]
+[ext_resource path="res://3d/Objects3D.tscn" type="PackedScene" id=14]
 
 [sub_resource type="GDScript" id=1]
 script/source = "extends Node2D
 
 func _ready():
+    var boids_spec : BoidsSpec = $BoidsInstance.boids_spec
+    
     #$SheepMeshInstance.multimesh = $BoidsInstance.boids_multimesh
     $BoidsInstance.add_boids_with_spread($Player.position, 100, Vector2(300,300))
     #$BoidsInstance.set_target(Vector2(0,0))
@@ -24,30 +28,14 @@ func _ready():
     $BoidsInstance.static_grid = statricgrid
     
     $DebugGrdTexture.texture = $BoidsInstance.dynamic_grid
-    $DebugGrdTexture.rect_scale = Vector2(1,1) / $BoidsInstance.boids_spec.grid_resolution
+    $DebugGrdTexture.rect_scale = Vector2(1,1) / boids_spec.grid_resolution
     $DebugStaticTexture.texture = $BoidsInstance.static_grid
-    $DebugStaticTexture.rect_scale =  $BoidsInstance.boids_spec.world_size / statricgrid.get_size()
+    $DebugStaticTexture.rect_scale =  boids_spec.world_size / statricgrid.get_size()
+    
+    $Player/Camera2D/Panel/Sliders.setup(boids_spec)
     
     $BoidsInstance.add_external_agent($Player, 24, true)
     $BoidsInstance.add_external_agent($Doggo, 64, false)
-    
-    var boids_spec : BoidsSpec = $BoidsInstance.boids_spec
-    var boids_multimesh = $BoidsInstance.boids_multimesh.multimesh
-    $Panel/Sliders.setup(boids_spec)
-    $SheepMeshInstance.multimesh.instance_count = boids_multimesh.instance_count
-    
-    for index in range(0, boids_multimesh.instance_count):
-        $SheepMeshInstance.multimesh.set_instance_custom_data(index, boids_multimesh.get_instance_custom_data(index))
-        $SheepMeshInstance.multimesh.set_instance_transform_2d(index, Transform2D.IDENTITY)
-    
-    var shader := ($SheepMeshInstance.material as ShaderMaterial)
-    shader.set_shader_param(\"grid_size\", boids_spec.grid_size)
-    shader.set_shader_param(\"world_size\", boids_spec.world_size)
-    shader.set_shader_param(\"state_texture\", $BoidsInstance.particles_texture)
-    shader.set_shader_param(\"velocity_max\", boids_spec.velocity_max)
-    
-func _process(delta):
-    $SheepMeshInstance.multimesh.visible_instance_count = $BoidsInstance.get_num_boids()
 
 func _physics_process(delta):
     $BoidsInstance.set_target($Player.position)
@@ -62,12 +50,12 @@ func _on_ButtonDebug_toggled(button_pressed):
 resource_local_to_scene = true
 script = ExtResource( 8 )
 world_size = Vector2( 1280, 720 )
-velocity_min = 25.0
+velocity_min = 20.0
 velocity_max = 100.0
-grid_resolution = 0.1
+grid_resolution = 0.3
 boids_capacity = 1024
-boids_size = 10.0
-boids_vision = 40.0
+boids_size = 5.0
+boids_vision = 20.0
 rule_cohesion = 100.0
 rule_seperation = 200.0
 rule_alignment = 1.0
@@ -75,23 +63,6 @@ rule_target = 0.3
 rule_colision = 200.0
 grid_power = 1.5
 seperation_power = 1.5
-
-[sub_resource type="ShaderMaterial" id=5]
-shader = ExtResource( 4 )
-shader_param/grid_size = null
-shader_param/world_size = null
-shader_param/velocity_max = null
-
-[sub_resource type="QuadMesh" id=2]
-size = Vector2( 36, -48 )
-
-[sub_resource type="MultiMesh" id=3]
-custom_data_format = 2
-mesh = SubResource( 2 )
-
-[sub_resource type="AtlasTexture" id=6]
-atlas = ExtResource( 2 )
-region = Rect2( 0, 0, 9, 12 )
 
 [sub_resource type="GDScript" id=13]
 script/source = "extends Node2D
@@ -103,17 +74,28 @@ func _draw():
     draw_rect(get_node(\"../BoidsInstance\").boids_aabb, Color(1,1,1,1), false, 1.0, true)
 "
 
-[sub_resource type="GDScript" id=14]
-script/source = "extends ProgressBar
+[sub_resource type="ShaderMaterial" id=5]
+shader = ExtResource( 4 )
+shader_param/grid_size = null
+shader_param/world_size = null
+shader_param/velocity_max = null
 
-func _process(delta):
-    value = get_node(\"../../BoidsInstance\").fullnes_avg
-"
+[sub_resource type="QuadMesh" id=2]
+size = Vector2( 18, -24 )
+
+[sub_resource type="MultiMesh" id=3]
+custom_data_format = 2
+mesh = SubResource( 2 )
+
+[sub_resource type="AtlasTexture" id=6]
+flags = 3
+atlas = ExtResource( 2 )
+region = Rect2( 0, 0, 9, 12 )
 
 [sub_resource type="GDScript" id=9]
 script/source = "extends KinematicBody2D
 
-const WALK_SPEED = 200
+const WALK_SPEED = 100
 var velocity = Vector2()
 
 func _draw():
@@ -132,7 +114,6 @@ func _physics_process(delta):
 "
 
 [sub_resource type="CircleShape2D" id=7]
-radius = 16.0
 
 [sub_resource type="AtlasTexture" id=8]
 atlas = ExtResource( 3 )
@@ -141,7 +122,7 @@ region = Rect2( 0, 0, 24, 24 )
 [sub_resource type="GDScript" id=11]
 script/source = "extends KinematicBody2D
 
-const WALK_SPEED = 50
+const WALK_SPEED = 25
 var velocity = Vector2()
 
 func _process(delta):
@@ -165,24 +146,33 @@ func _physics_process(delta):
 
     move_and_slide(velocity, Vector2(0, 0))
     
-    position = position.round()
+    #position = position.round()
 
     if velocity.length() > 0.0:
         $Tutorial.visible = false
 "
 
 [sub_resource type="CircleShape2D" id=15]
-radius = 13.0384
+radius = 7.0
 
 [sub_resource type="AtlasTexture" id=10]
 atlas = ExtResource( 6 )
 region = Rect2( 0, 0, 24, 24 )
 
+[sub_resource type="ViewportTexture" id=22]
+viewport_path = NodePath("Viewport")
+
+[sub_resource type="GDScript" id=14]
+script/source = "extends ProgressBar
+
+func _process(delta):
+    value = get_node(\"../../../../BoidsInstance\").fullnes_avg
+"
+
 [node name="Sheep" type="Node2D"]
 script = SubResource( 1 )
 
 [node name="TileMap" type="TileMap" parent="."]
-scale = Vector2( 2, 2 )
 tile_set = ExtResource( 12 )
 cell_size = Vector2( 32, 32 )
 format = 1
@@ -219,52 +209,17 @@ flip_v = true
 [node name="BoidsInstance" parent="." instance=ExtResource( 1 )]
 boids_spec = SubResource( 12 )
 
-[node name="SheepMeshInstance" type="MultiMeshInstance2D" parent="."]
-material = SubResource( 5 )
-multimesh = SubResource( 3 )
-texture = SubResource( 6 )
-
 [node name="AABB" type="Node2D" parent="." groups=["debug_visu"]]
 visible = false
 script = SubResource( 13 )
 
-[node name="Panel" type="HBoxContainer" parent="."]
-rect_min_size = Vector2( 0, 24 )
-script = ExtResource( 10 )
-
-[node name="ButtonDebug" type="CheckButton" parent="Panel"]
-margin_right = 155.0
-margin_bottom = 40.0
-text = "Debug View"
-
-[node name="ButtonBoidsSettings" type="CheckButton" parent="Panel"]
-margin_left = 159.0
-margin_right = 330.0
-margin_bottom = 40.0
-text = "Boids Settings"
-
-[node name="Sliders" parent="Panel" instance=ExtResource( 5 )]
-visible = false
-margin_left = 334.0
-margin_right = 334.0
-margin_bottom = 40.0
-
-[node name="Label" type="Label" parent="Panel"]
-margin_left = 334.0
-margin_top = 13.0
-margin_right = 425.0
-margin_bottom = 27.0
-text = "Flock Feeding:"
-
-[node name="ProgressBar" type="ProgressBar" parent="Panel"]
-margin_left = 429.0
-margin_top = 13.0
-margin_right = 629.0
-margin_bottom = 27.0
-rect_min_size = Vector2( 200, 0 )
-size_flags_vertical = 4
-max_value = 1.0
-script = SubResource( 14 )
+[node name="SheepMeshInstance2D" type="MultiMeshInstance2D" parent="."]
+modulate = Color( 0.435294, 0.458824, 1, 0.152941 )
+material = SubResource( 5 )
+multimesh = SubResource( 3 )
+texture = SubResource( 6 )
+script = ExtResource( 13 )
+boids_instance_path = NodePath("../BoidsInstance")
 
 [node name="Doggo" type="KinematicBody2D" parent="."]
 position = Vector2( 452, 325 )
@@ -282,7 +237,6 @@ texture = ExtResource( 9 )
 shape = SubResource( 7 )
 
 [node name="Sprite" type="Sprite" parent="Doggo"]
-scale = Vector2( 2, 2 )
 texture = SubResource( 8 )
 offset = Vector2( 0, -6 )
 script = ExtResource( 7 )
@@ -323,7 +277,6 @@ texture = ExtResource( 11 )
 shape = SubResource( 15 )
 
 [node name="Sprite" type="Sprite" parent="Player"]
-scale = Vector2( 2, 2 )
 texture = SubResource( 10 )
 offset = Vector2( 0, -8 )
 script = ExtResource( 7 )
@@ -337,5 +290,65 @@ margin_right = 102.0
 margin_bottom = -41.0
 text = "shepherd is part of the herd"
 
-[connection signal="toggled" from="Panel/ButtonDebug" to="." method="_on_ButtonDebug_toggled"]
-[connection signal="toggled" from="Panel/ButtonBoidsSettings" to="Panel" method="_on_ButtonBoidsSettings_toggled"]
+[node name="Camera2D" type="Camera2D" parent="Player"]
+current = true
+zoom = Vector2( 0.5, 0.5 )
+
+[node name="3DLayer" type="Sprite" parent="Player/Camera2D"]
+texture = SubResource( 22 )
+
+[node name="Panel" type="HBoxContainer" parent="Player/Camera2D"]
+margin_left = -318.0
+margin_top = -180.0
+margin_right = 311.0
+margin_bottom = -140.0
+rect_min_size = Vector2( 0, 24 )
+script = ExtResource( 10 )
+
+[node name="ButtonDebug" type="CheckButton" parent="Player/Camera2D/Panel"]
+margin_right = 155.0
+margin_bottom = 40.0
+text = "Debug View"
+
+[node name="ButtonBoidsSettings" type="CheckButton" parent="Player/Camera2D/Panel"]
+margin_left = 159.0
+margin_right = 330.0
+margin_bottom = 40.0
+text = "Boids Settings"
+
+[node name="Sliders" parent="Player/Camera2D/Panel" instance=ExtResource( 5 )]
+visible = false
+margin_left = 334.0
+margin_right = 334.0
+margin_bottom = 40.0
+
+[node name="Label" type="Label" parent="Player/Camera2D/Panel"]
+margin_left = 334.0
+margin_top = 13.0
+margin_right = 425.0
+margin_bottom = 27.0
+text = "Flock Feeding:"
+
+[node name="ProgressBar" type="ProgressBar" parent="Player/Camera2D/Panel"]
+margin_left = 429.0
+margin_top = 13.0
+margin_right = 629.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 200, 0 )
+size_flags_vertical = 4
+max_value = 1.0
+script = SubResource( 14 )
+
+[node name="Viewport" type="Viewport" parent="."]
+size = Vector2( 640, 360 )
+transparent_bg = true
+handle_input_locally = false
+usage = 3
+render_target_v_flip = true
+render_target_update_mode = 3
+
+[node name="Objects3D" parent="Viewport" instance=ExtResource( 14 )]
+camera = NodePath("../../Player/Camera2D")
+
+[connection signal="toggled" from="Player/Camera2D/Panel/ButtonDebug" to="." method="_on_ButtonDebug_toggled"]
+[connection signal="toggled" from="Player/Camera2D/Panel/ButtonBoidsSettings" to="Player/Camera2D/Panel" method="_on_ButtonBoidsSettings_toggled"]
