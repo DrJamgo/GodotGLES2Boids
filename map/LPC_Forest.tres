@@ -18,7 +18,7 @@ points = PoolVector2Array( 32, 0, 32, 32, 0, 32, 11.1249, 11.5749, 22.1719, 2.07
 points = PoolVector2Array( 28.625, 26.9375, 4.25, 26.875, 8.375, 10.0625, 22.875, 9.9375 )
 
 [resource]
-0/name = "forest_tiles.png 0"
+0/name = "Tiles"
 0/texture = ExtResource( 1 )
 0/tex_offset = Vector2( 0, 0 )
 0/modulate = Color( 1, 1, 1, 1 )
@@ -64,7 +64,7 @@ points = PoolVector2Array( 28.625, 26.9375, 4.25, 26.875, 8.375, 10.0625, 22.875
 "shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
 } ]
 0/z_index = 0
-1/name = "forest_tiles.png 1"
+1/name = "Trunk"
 1/texture = ExtResource( 1 )
 1/tex_offset = Vector2( 0, 0 )
 1/modulate = Color( 1, 1, 1, 1 )
@@ -85,3 +85,17 @@ points = PoolVector2Array( 28.625, 26.9375, 4.25, 26.875, 8.375, 10.0625, 22.875
 "shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
 } ]
 1/z_index = 0
+2/name = "Flowers"
+2/texture = ExtResource( 1 )
+2/tex_offset = Vector2( 0, 0 )
+2/modulate = Color( 1, 1, 1, 1 )
+2/region = Rect2( 32, 0, 32, 32 )
+2/tile_mode = 0
+2/occluder_offset = Vector2( 0, 0 )
+2/navigation_offset = Vector2( 0, 0 )
+2/shape_offset = Vector2( 0, 0 )
+2/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+2/shape_one_way = false
+2/shape_one_way_margin = 0.0
+2/shapes = [  ]
+2/z_index = 0
