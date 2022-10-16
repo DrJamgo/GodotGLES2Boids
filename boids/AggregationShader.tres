@@ -8,13 +8,14 @@ uniform int num_particles;
 uniform vec2 particles_size;
 uniform sampler2D particles_tex;
 
-varying float uv_step;
-varying float uv_max;
+const float uv_step = 1.0 / 1024.0;
+const float uv_max = 1.0;
 
 void vertex()
 {
-    uv_step = 1.0 / particles_size.x;
-    uv_max = uv_step * float(num_particles);
+    // Using varying does not work on webGL
+    //uv_step = 1.0 / particles_size.x;
+    //uv_max = uv_step * float(num_particles);
 }
 
 void fragment()

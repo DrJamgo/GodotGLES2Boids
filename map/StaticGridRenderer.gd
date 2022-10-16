@@ -19,6 +19,7 @@ func _draw_colision_shapes(tilemap : TileMap):
                 draw_polygon(world_points, colors)
 
 func _draw_food_tiles(tilemap : TileMap, color : Color):
+    print(" - " + tilemap.name)
     var tileset : TileSet = tilemap.tile_set
     var index_flowers = tileset.find_tile_by_name("Flowers")
     
@@ -29,10 +30,10 @@ func _draw_food_tiles(tilemap : TileMap, color : Color):
         draw_rect(rect, Color(0,1,0,0.3))
 
 func _draw():
-    print("draw_static_grid")
+    print("draw tilemap_collision")
     for tilemap in get_tree().get_nodes_in_group("tilemap_collision"):
         _draw_colision_shapes(tilemap)
-    
+    print("draw tilemap_tiles")
     for tilemap in get_tree().get_nodes_in_group("tilemap_tiles"):
         _draw_food_tiles(tilemap, Color(0,0,1,0.5))
     
