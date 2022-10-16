@@ -27,9 +27,6 @@ func _draw_food_tiles(tilemap : TileMap, color : Color):
         var world : Vector2 = tilemap.map_to_world(coordinate)
         var rect = Rect2(world * boids_spec.grid_resolution, tilemap.cell_size * boids_spec.grid_resolution) 
         draw_rect(rect, Color(0,1,0,0.3))
-        
-        
-        
 
 func _draw():
     print("draw_static_grid")

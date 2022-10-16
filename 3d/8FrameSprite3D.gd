@@ -20,7 +20,7 @@ func _process(delta):
         new_region.position.x += frame * default_region.size.x
         atlas.region = new_region
 
-        offset.y = default_offset.y + sin(dist * jumpfrequency) * 0.5 * min(velocity.length(), 50.0) * jumpiness
+        offset.y = default_offset.y + round(sin(dist * jumpfrequency) * 0.5 * min(velocity.length(), 50.0) * jumpiness)
         dist += min(velocity.length(), 50) * delta
     else:
         dist = 0.0
