@@ -14,6 +14,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://8FrameSprite.gd"
 }, {
+"base": "Sprite3D",
+"class": "AightFrameSprite3D",
+"language": "GDScript",
+"path": "res://3d/8FrameSprite3D.gd"
+}, {
 "base": "Node",
 "class": "BoidsInstance",
 "language": "GDScript",
@@ -31,6 +36,7 @@ _global_script_classes=[ {
 } ]
 _global_script_class_icons={
 "AightFrameSprite": "",
+"AightFrameSprite3D": "",
 "BoidsInstance": "",
 "BoidsMultimeshInstance2D": "",
 "BoidsSpec": ""
@@ -46,6 +52,7 @@ config/icon="res://icon.png"
 
 window/size/width=1280
 window/size/height=720
+window/dpi/allow_hidpi=true
 window/stretch/mode="2d"
 window/stretch/aspect="keep"
 

@@ -1,18 +1,12 @@
-[gd_scene load_steps=30 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://boids/BoidsInstance.tscn" type="PackedScene" id=1]
-[ext_resource path="res://assets/sheep.png" type="Texture" id=2]
-[ext_resource path="res://assets/doggo.png" type="Texture" id=3]
-[ext_resource path="res://SheepInstanceShader.gdshader" type="Shader" id=4]
 [ext_resource path="res://Sliders.tscn" type="PackedScene" id=5]
-[ext_resource path="res://assets/player.png" type="Texture" id=6]
-[ext_resource path="res://8FrameSprite.gd" type="Script" id=7]
 [ext_resource path="res://boids/BoidsSpec.gd" type="Script" id=8]
 [ext_resource path="res://assets/plain-arrow.png" type="Texture" id=9]
 [ext_resource path="res://Panel.gd" type="Script" id=10]
 [ext_resource path="res://assets/move.png" type="Texture" id=11]
 [ext_resource path="res://map/LPC_Forest.tres" type="TileSet" id=12]
-[ext_resource path="res://SheepMeshInstance2D.gd" type="Script" id=13]
 [ext_resource path="res://3d/Objects3D.tscn" type="PackedScene" id=14]
 
 [sub_resource type="GDScript" id=1]
@@ -22,7 +16,7 @@ func _ready():
     var boids_spec : BoidsSpec = $BoidsInstance.boids_spec
     
     #$SheepMeshInstance.multimesh = $BoidsInstance.boids_multimesh
-    $BoidsInstance.add_boids_with_spread($Player.position, 100, Vector2(300,300))
+    $BoidsInstance.add_boids_with_spread($Player.position, 100, Vector2(128,128))
     #$BoidsInstance.set_target(Vector2(0,0))
     var statricgrid : Texture = preload(\"res://assets/level1.png\")
     $BoidsInstance.static_grid = statricgrid
@@ -34,8 +28,8 @@ func _ready():
     
     $Player/Camera2D/Panel/Sliders.setup(boids_spec)
     
-    $BoidsInstance.add_external_agent($Player, 24, true)
-    $BoidsInstance.add_external_agent($Doggo, 64, false)
+    $BoidsInstance.add_external_agent($Player, 16, true)
+    $BoidsInstance.add_external_agent($Doggo, 32, false)
 
 func _physics_process(delta):
     $BoidsInstance.set_target($Player.position)
@@ -74,37 +68,26 @@ func _draw():
     draw_rect(get_node(\"../BoidsInstance\").boids_aabb, Color(1,1,1,1), false, 1.0, true)
 "
 
-[sub_resource type="ShaderMaterial" id=5]
-shader = ExtResource( 4 )
-shader_param/grid_size = null
-shader_param/world_size = null
-shader_param/velocity_max = null
-
-[sub_resource type="QuadMesh" id=2]
-size = Vector2( 18, -24 )
-
-[sub_resource type="MultiMesh" id=3]
-custom_data_format = 2
-mesh = SubResource( 2 )
-
-[sub_resource type="AtlasTexture" id=6]
-flags = 3
-atlas = ExtResource( 2 )
-region = Rect2( 0, 0, 9, 12 )
-
 [sub_resource type="GDScript" id=9]
 script/source = "extends KinematicBody2D
 
 const WALK_SPEED = 100
 var velocity = Vector2()
+export(NodePath) var objects_3d
+var sprite : AightFrameSprite3D
+
+func _ready():
+    sprite = preload(\"res://3d/Doggo3D.tscn\").instance()
+    get_node(objects_3d).add_child(sprite)
+
+func _process(delta):
+    sprite.velocity = velocity
+    sprite.transform.origin = Vector3(position.x, 0, position.y)
+    $Arrow.rotation = atan2(velocity.y, velocity.x)
 
 func _draw():
     draw_arc(Vector2(0,0), 64.0, -PI, PI, 40, Color(1.0,1.0,1.0,0.2), 2.0)
 
-func _process(delta):
-    $Sprite.velocity = velocity
-    $Arrow.rotation = atan2(velocity.y, velocity.x)
-    
 func _physics_process(delta):
     velocity = get_local_mouse_position()
     if(velocity.length() > WALK_SPEED):
@@ -115,18 +98,21 @@ func _physics_process(delta):
 
 [sub_resource type="CircleShape2D" id=7]
 
-[sub_resource type="AtlasTexture" id=8]
-atlas = ExtResource( 3 )
-region = Rect2( 0, 0, 24, 24 )
-
 [sub_resource type="GDScript" id=11]
 script/source = "extends KinematicBody2D
 
-const WALK_SPEED = 25
+const WALK_SPEED = 40
 var velocity = Vector2()
+export(NodePath) var objects_3d
+var sprite : AightFrameSprite3D
+
+func _ready():
+    sprite = preload(\"res://3d/Player3D.tscn\").instance()
+    get_node(objects_3d).add_child(sprite)
 
 func _process(delta):
-    $Sprite.velocity = velocity
+    sprite.velocity = velocity
+    sprite.transform.origin = Vector3(position.x, 0, position.y)
     
 func _physics_process(delta):
 
@@ -143,6 +129,8 @@ func _physics_process(delta):
         velocity.y =  WALK_SPEED
     else:
         velocity.y = 0
+        
+    velocity = velocity.limit_length(WALK_SPEED)
 
     move_and_slide(velocity, Vector2(0, 0))
     
@@ -154,10 +142,6 @@ func _physics_process(delta):
 
 [sub_resource type="CircleShape2D" id=15]
 radius = 7.0
-
-[sub_resource type="AtlasTexture" id=10]
-atlas = ExtResource( 6 )
-region = Rect2( 0, 0, 24, 24 )
 
 [sub_resource type="ViewportTexture" id=22]
 viewport_path = NodePath("Viewport")
@@ -185,13 +169,6 @@ cell_clip_uv = true
 format = 1
 tile_data = PoolIntArray( 0, 0, 393219, 1, 0, 393218, 2, 0, 393219, 3, 0, 393218, 4, 0, 393219, 5, 0, 393218, 6, 0, 393219, 7, 0, 393218, 8, 0, 393219, 9, 0, 393218, 10, 0, 393219, 11, 0, 393218, 12, 0, 393219, 13, 0, 393218, 14, 0, 393219, 15, 0, 393218, 16, 0, 393219, 17, 0, 393218, 18, 0, 393219, 19, 0, 393218, 20, 0, 393219, 21, 0, 393218, 22, 0, 393219, 23, 0, 393218, 24, 0, 393219, 25, 0, 393218, 26, 0, 393219, 27, 0, 393218, 28, 0, 393219, 29, 0, 393218, 30, 0, 393219, 31, 0, 393218, 32, 0, 393219, 33, 0, 393218, 34, 0, 393219, 35, 0, 393218, 36, 0, 393219, 37, 0, 393218, 38, 0, 393219, 39, 0, 393218, 65536, 0, 458755, 65537, 0, 458753, 65538, 0, 458752, 65539, 0, 458753, 65540, 0, 458752, 65541, 0, 458753, 65542, 0, 458752, 65543, 0, 458753, 65544, 0, 458752, 65545, 0, 458753, 65546, 0, 458752, 65547, 0, 458753, 65548, 0, 458752, 65549, 0, 458753, 65550, 0, 458752, 65551, 0, 458753, 65552, 0, 458752, 65553, 0, 458753, 65554, 0, 458752, 65555, 0, 458753, 65556, 0, 458752, 65557, 0, 458753, 65558, 0, 458752, 65559, 0, 458753, 65560, 0, 458752, 65561, 0, 458753, 65562, 0, 458752, 65563, 0, 458753, 65564, 0, 458752, 65565, 0, 458753, 65566, 0, 458752, 65567, 0, 458753, 65568, 0, 458752, 65569, 0, 458753, 65570, 0, 458752, 65571, 0, 458753, 65572, 0, 458752, 65573, 0, 458753, 65574, 0, 458752, 65575, 0, 458753, 131072, 0, 458754, 131073, 0, 393217, 196608, 0, 458755, 196609, 0, 458753, 262144, 0, 458754, 262145, 0, 393217, 327680, 0, 458755, 327681, 0, 458753, 393216, 0, 458754, 393217, 0, 393217, 458752, 0, 458755, 458753, 0, 458753, 524288, 0, 458754, 524289, 0, 393217, 589824, 0, 458755, 589825, 0, 458753, 655360, 0, 458754, 655361, 0, 393217, 720896, 0, 458755, 720897, 0, 458753, 786432, 0, 458754, 786433, 0, 393217, 851968, 0, 458755, 851969, 0, 458753, 917504, 0, 458754, 917505, 0, 393217, 983040, 0, 458755, 983041, 0, 458753, 1048576, 0, 458754, 1048577, 0, 393217, 1114112, 0, 458755, 1114113, 0, 458753, 1179648, 0, 458754, 1179649, 0, 393217, 1245184, 0, 458755, 1245185, 0, 458753, 1310720, 0, 458754, 1310721, 0, 393217, 1376256, 0, 393218, 1376257, 0, 458753, 1441792, 0, 458753 )
 
-[node name="ColorRect" type="ColorRect" parent="."]
-visible = false
-margin_right = 1280.0
-margin_bottom = 720.0
-rect_min_size = Vector2( 1280, 720 )
-color = Color( 0.286275, 0.490196, 0.345098, 1 )
-
 [node name="DebugGrdTexture" type="TextureRect" parent="." groups=["debug_visu"]]
 visible = false
 modulate = Color( 1, 1, 1, 0.509804 )
@@ -213,17 +190,10 @@ boids_spec = SubResource( 12 )
 visible = false
 script = SubResource( 13 )
 
-[node name="SheepMeshInstance2D" type="MultiMeshInstance2D" parent="."]
-modulate = Color( 0.435294, 0.458824, 1, 0.152941 )
-material = SubResource( 5 )
-multimesh = SubResource( 3 )
-texture = SubResource( 6 )
-script = ExtResource( 13 )
-boids_instance_path = NodePath("../BoidsInstance")
-
 [node name="Doggo" type="KinematicBody2D" parent="."]
 position = Vector2( 452, 325 )
 script = SubResource( 9 )
+objects_3d = NodePath("../Viewport/Objects3D")
 
 [node name="Arrow" type="Node2D" parent="Doggo"]
 
@@ -236,11 +206,6 @@ texture = ExtResource( 9 )
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Doggo"]
 shape = SubResource( 7 )
 
-[node name="Sprite" type="Sprite" parent="Doggo"]
-texture = SubResource( 8 )
-offset = Vector2( 0, -6 )
-script = ExtResource( 7 )
-
 [node name="Label2" type="Label" parent="Doggo" groups=["debug_visu"]]
 visible = false
 modulate = Color( 0.556863, 0, 0, 1 )
@@ -251,8 +216,9 @@ margin_bottom = -20.0
 text = "doggo is scary"
 
 [node name="Player" type="KinematicBody2D" parent="."]
-position = Vector2( 420, 360 )
+position = Vector2( 216, 190 )
 script = SubResource( 11 )
+objects_3d = NodePath("../Viewport/Objects3D")
 
 [node name="Tutorial" type="Node2D" parent="Player"]
 
@@ -274,16 +240,12 @@ scale = Vector2( 0.252494, 0.252494 )
 texture = ExtResource( 11 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+position = Vector2( 0, -6 )
 shape = SubResource( 15 )
-
-[node name="Sprite" type="Sprite" parent="Player"]
-texture = SubResource( 10 )
-offset = Vector2( 0, -8 )
-script = ExtResource( 7 )
 
 [node name="Label" type="Label" parent="Player" groups=["debug_visu"]]
 visible = false
-modulate = Color( 0, 0.227451, 0.0392157, 1 )
+modulate = Color( 0.494118, 0.501961, 0.996078, 1 )
 margin_left = -76.0
 margin_top = -55.0
 margin_right = 102.0
