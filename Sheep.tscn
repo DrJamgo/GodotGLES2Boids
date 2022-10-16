@@ -115,7 +115,7 @@ func _ready():
 
 func _process(delta):
     sprite.velocity = velocity
-    sprite.transform.origin = Vector3(position.x, 0, position.y)
+    sprite.transform.origin = Vector3(position.x, 0, position.y).round()
     
 func _physics_process(delta):
 
@@ -135,8 +135,6 @@ func _physics_process(delta):
         
     velocity = velocity.limit_length(WALK_SPEED)
     velocity = move_and_slide(velocity, Vector2(0, 0))
-    
-    #position = position.round()
 
     if velocity.length() > 0.0:
         $Tutorial.visible = false
