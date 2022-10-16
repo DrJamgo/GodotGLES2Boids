@@ -12,7 +12,6 @@ func _ready():
         
         for index in range(0, boids_multimesh.instance_count):
             multimesh.set_instance_custom_data(index, boids_multimesh.get_instance_custom_data(index))
-            multimesh.set_instance_transform_2d(index, Transform2D.IDENTITY)
         
         var shader := (material_override as ShaderMaterial)
         shader.set_shader_param("grid_size", boids_spec.grid_size)
