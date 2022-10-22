@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=2]
+[gd_scene load_steps=22 format=2]
 
 [ext_resource path="res://boids/BoidsInstance.tscn" type="PackedScene" id=1]
 [ext_resource path="res://map/StaticGridRenderer.gd" type="Script" id=2]
@@ -17,7 +17,8 @@ script/source = "extends Node2D
 func _ready():
     var boids_spec : BoidsSpec = $BoidsInstance.boids_spec
     
-    $BoidsInstance.add_boids_with_spread($Player.position, 100, Vector2(128,128))
+    $Player.position = $Spawn.position
+    $BoidsInstance.add_boids_with_spread($Spawn.position, 20, ($Spawn.shape as RectangleShape2D).extents)
 
     $BoidsInstance.static_grid = $Viewport2.get_texture()
     $Viewport2.size = $BoidsInstance.boids_spec.grid_size
@@ -28,10 +29,10 @@ func _ready():
     $DebugStaticTexture.texture = $BoidsInstance.static_grid
     $DebugStaticTexture.rect_scale =  boids_spec.world_size / $BoidsInstance.static_grid.get_size()
     
-    $Player/Camera2D/Panel/Sliders.setup(boids_spec)
+    $CameraSpace/Panel/Sliders.setup(boids_spec)
     
     $BoidsInstance.add_external_agent($Player, 16, true)
-    $BoidsInstance.add_external_agent($Doggo, 32, false)
+    $BoidsInstance.add_external_agent($Doggo, 48, false)
 
 func _physics_process(delta):
     $BoidsInstance.set_target($Player.position)
@@ -60,6 +61,28 @@ rule_colision = 200.0
 grid_power = 1.5
 seperation_power = 1.5
 
+[sub_resource type="RectangleShape2D" id=24]
+extents = Vector2( 50, 50 )
+
+[sub_resource type="GDScript" id=23]
+script/source = "extends Node2D
+
+export(NodePath) var camera_2d
+
+func _process(delta):
+    position = (get_node(camera_2d) as Camera2D).get_camera_screen_center()
+"
+
+[sub_resource type="ViewportTexture" id=22]
+viewport_path = NodePath("Viewport")
+
+[sub_resource type="GDScript" id=14]
+script/source = "extends ProgressBar
+
+func _process(delta):
+    value = get_node(\"../../../BoidsInstance\").fullnes_avg
+"
+
 [sub_resource type="GDScript" id=13]
 script/source = "extends Node2D
 
@@ -85,15 +108,18 @@ func _ready():
 func _process(delta):
     sprite.velocity = velocity
     sprite.transform.origin = Vector3(position.x, 0, position.y)
-    $Arrow.rotation = atan2(velocity.y, velocity.x)
 
 func _draw():
-    draw_arc(Vector2(0,0), 64.0, -PI, PI, 40, Color(1.0,1.0,1.0,0.2), 2.0)
+    draw_arc(Vector2(0,0), 48.0, -PI, PI, 40, Color(1.0,1.0,1.0,0.2), 2.0)
 
 func _physics_process(delta):
     velocity = get_local_mouse_position()
+    $Arrow.rotation = atan2(velocity.y, velocity.x)
+    if velocity.length() < 20.0:
+        velocity = Vector2.ZERO
     if(velocity.length() > WALK_SPEED):
-        velocity = velocity.normalized() * WALK_SPEED 
+        velocity = velocity.limit_length(WALK_SPEED)
+
 
     velocity = move_and_slide(velocity, Vector2(0, 0))
 "
@@ -143,18 +169,11 @@ func _physics_process(delta):
 [sub_resource type="CircleShape2D" id=15]
 radius = 7.0
 
-[sub_resource type="ViewportTexture" id=22]
-viewport_path = NodePath("Viewport")
-
-[sub_resource type="GDScript" id=14]
-script/source = "extends ProgressBar
-
-func _process(delta):
-    value = get_node(\"../../../../BoidsInstance\").fullnes_avg
-"
-
 [node name="Sheep" type="Node2D"]
 script = SubResource( 1 )
+
+[node name="BoidsInstance" parent="." instance=ExtResource( 1 )]
+boids_spec = SubResource( 12 )
 
 [node name="Viewport2" type="Viewport" parent="."]
 size = Vector2( 2, 2 )
@@ -165,6 +184,17 @@ render_target_update_mode = 1
 
 [node name="StaticGridRenderer" type="Node2D" parent="Viewport2"]
 script = ExtResource( 2 )
+
+[node name="Viewport" type="Viewport" parent="."]
+size = Vector2( 640, 360 )
+transparent_bg = true
+handle_input_locally = false
+usage = 3
+render_target_v_flip = true
+render_target_update_mode = 3
+
+[node name="Objects3D" parent="Viewport" instance=ExtResource( 14 )]
+camera = NodePath("../../Player/Camera2D")
 
 [node name="TileMap" type="TileMap" parent="."]
 tile_set = ExtResource( 12 )
@@ -179,6 +209,66 @@ show_collision = true
 format = 1
 tile_data = PoolIntArray( 0, 0, 393219, 1, 0, 393218, 2, 0, 393219, 3, 0, 393218, 4, 0, 393219, 5, 0, 393218, 6, 0, 393219, 7, 0, 393218, 8, 0, 393219, 9, 0, 393218, 10, 0, 393219, 11, 0, 393218, 12, 0, 393219, 13, 0, 393218, 14, 0, 393219, 15, 0, 393218, 16, 0, 393219, 17, 0, 393218, 18, 0, 393219, 19, 0, 393218, 20, 0, 393219, 21, 0, 393218, 22, 0, 393219, 23, 0, 393218, 24, 0, 393219, 25, 0, 393218, 26, 0, 393219, 27, 0, 393218, 28, 0, 393219, 29, 0, 393218, 30, 0, 393219, 31, 0, 393218, 32, 0, 393219, 33, 0, 393218, 34, 0, 393219, 35, 0, 393218, 36, 0, 393219, 37, 0, 393218, 38, 0, 393219, 39, 0, 393218, 65536, 0, 458755, 65537, 0, 458753, 65538, 0, 458752, 65539, 0, 458753, 65540, 0, 458752, 65541, 0, 458753, 65542, 0, 458752, 65543, 0, 458753, 65544, 0, 458752, 65545, 0, 458754, 65546, 0, 458755, 65547, 0, 458753, 65548, 0, 458752, 65549, 0, 458753, 65550, 0, 458752, 65551, 0, 458753, 65552, 0, 458752, 65553, 0, 458753, 65554, 0, 458752, 65555, 0, 458753, 65556, 0, 458752, 65557, 0, 458753, 65558, 0, 458752, 65559, 0, 458753, 65560, 0, 458752, 65561, 0, 458753, 65562, 0, 458752, 65563, 0, 458753, 65564, 0, 458752, 65565, 0, 458753, 65566, 0, 458752, 65567, 0, 458753, 65568, 0, 458752, 65569, 0, 458753, 65570, 0, 458752, 65571, 0, 458753, 65572, 0, 458752, 65573, 0, 458753, 65574, 0, 458752, 65575, 0, 458753, 131072, 0, 458754, 131073, 0, 393217, 131078, 1, 0, 131081, 0, 458752, 131082, 0, 458753, 196608, 0, 458755, 196609, 0, 458753, 196611, 1, 0, 262144, 0, 458754, 262145, 0, 393217, 327680, 0, 458755, 327681, 0, 458753, 327690, 1, 0, 393216, 0, 458754, 393217, 0, 393217, 393219, 1, 0, 458752, 0, 458755, 458753, 0, 393219, 458754, 0, 393217, 524288, 0, 458754, 524289, 0, 393218, 524290, 0, 458753, 524297, 1, 0, 589824, 0, 458755, 589825, 0, 458753, 589830, 2, 0, 589831, 2, 0, 589834, 2, 0, 589836, 2, 0, 655360, 0, 458754, 655361, 0, 393217, 655364, 2, 0, 655366, 2, 0, 655368, 2, 0, 655369, 2, 0, 655372, 2, 0, 720896, 0, 458755, 720897, 0, 458753, 720900, 2, 0, 720901, 2, 0, 720902, 2, 0, 720903, 2, 0, 720904, 2, 0, 720905, 2, 0, 720906, 2, 0, 720908, 2, 0, 786432, 0, 458754, 786433, 0, 393217, 786437, 2, 0, 786439, 2, 0, 786441, 2, 0, 786442, 2, 0, 786443, 2, 0, 786444, 2, 0, 851968, 0, 458755, 851969, 0, 458753, 851972, 2, 0, 851973, 2, 0, 851974, 2, 0, 851975, 2, 0, 851977, 2, 0, 851979, 2, 0, 917504, 0, 458754, 917505, 0, 393217, 917509, 2, 0, 917511, 2, 0, 917514, 2, 0, 917515, 2, 0, 983040, 0, 458755, 983041, 0, 458753, 1048576, 0, 458754, 1048577, 0, 393217, 1114112, 0, 458755, 1114113, 0, 458753, 1179648, 0, 458754, 1179649, 0, 393217, 1245184, 0, 458755, 1245185, 0, 458753, 1310720, 0, 458754, 1310721, 0, 393217, 1376256, 0, 393218, 1376257, 0, 458753, 1441792, 0, 458753 )
 
+[node name="Spawn" type="CollisionShape2D" parent="."]
+position = Vector2( 211, 181 )
+shape = SubResource( 24 )
+
+[node name="CameraSpace" type="Node2D" parent="."]
+position = Vector2( 320, 180 )
+script = SubResource( 23 )
+camera_2d = NodePath("../Player/Camera2D")
+
+[node name="3DLayer" type="Sprite" parent="CameraSpace"]
+texture = SubResource( 22 )
+
+[node name="Panel" type="HBoxContainer" parent="CameraSpace"]
+modulate = Color( 1, 1, 1, 0.509804 )
+margin_left = -320.0
+margin_top = -180.0
+margin_right = 320.0
+margin_bottom = -140.0
+rect_min_size = Vector2( 640, 24 )
+script = ExtResource( 10 )
+
+[node name="ButtonDebug" type="CheckButton" parent="CameraSpace/Panel"]
+margin_right = 155.0
+margin_bottom = 40.0
+text = "Debug View"
+
+[node name="ButtonBoidsSettings" type="CheckButton" parent="CameraSpace/Panel"]
+margin_left = 159.0
+margin_right = 330.0
+margin_bottom = 40.0
+text = "Boids Settings"
+
+[node name="Sliders" parent="CameraSpace/Panel" instance=ExtResource( 5 )]
+visible = false
+margin_left = 334.0
+margin_right = 334.0
+margin_bottom = 40.0
+
+[node name="Label" type="Label" parent="CameraSpace/Panel"]
+margin_left = 334.0
+margin_top = 13.0
+margin_right = 425.0
+margin_bottom = 27.0
+text = "Flock Feeding:"
+
+[node name="ProgressBar" type="ProgressBar" parent="CameraSpace/Panel"]
+margin_left = 429.0
+margin_top = 13.0
+margin_right = 629.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 200, 0 )
+size_flags_vertical = 4
+max_value = 1.0
+script = SubResource( 14 )
+
+[node name="Sprite" type="Sprite" parent="CameraSpace"]
+position = Vector2( 2, 165 )
+scale = Vector2( 2, 2 )
+texture = ExtResource( 3 )
+
 [node name="DebugGrdTexture" type="TextureRect" parent="." groups=["debug_visu"]]
 visible = false
 modulate = Color( 1, 1, 1, 0.509804 )
@@ -191,9 +281,6 @@ visible = false
 margin_right = 40.0
 margin_bottom = 40.0
 flip_v = true
-
-[node name="BoidsInstance" parent="." instance=ExtResource( 1 )]
-boids_spec = SubResource( 12 )
 
 [node name="AABB" type="Node2D" parent="." groups=["debug_visu"]]
 visible = false
@@ -226,7 +313,7 @@ margin_bottom = -20.0
 text = "doggo is scary"
 
 [node name="Player" type="KinematicBody2D" parent="."]
-position = Vector2( 216, 190 )
+position = Vector2( 224, 177 )
 script = SubResource( 11 )
 objects_3d = NodePath("../Viewport/Objects3D")
 
@@ -266,67 +353,9 @@ text = "shepherd is part of the herd"
 [node name="Camera2D" type="Camera2D" parent="Player"]
 current = true
 zoom = Vector2( 0.5, 0.5 )
+limit_left = 0
+limit_top = 0
+smoothing_speed = 1.0
 
-[node name="3DLayer" type="Sprite" parent="Player/Camera2D"]
-texture = SubResource( 22 )
-
-[node name="Panel" type="HBoxContainer" parent="Player/Camera2D"]
-margin_left = -318.0
-margin_top = -180.0
-margin_right = 311.0
-margin_bottom = -140.0
-rect_min_size = Vector2( 0, 24 )
-script = ExtResource( 10 )
-
-[node name="ButtonDebug" type="CheckButton" parent="Player/Camera2D/Panel"]
-margin_right = 155.0
-margin_bottom = 40.0
-text = "Debug View"
-
-[node name="ButtonBoidsSettings" type="CheckButton" parent="Player/Camera2D/Panel"]
-margin_left = 159.0
-margin_right = 330.0
-margin_bottom = 40.0
-text = "Boids Settings"
-
-[node name="Sliders" parent="Player/Camera2D/Panel" instance=ExtResource( 5 )]
-visible = false
-margin_left = 334.0
-margin_right = 334.0
-margin_bottom = 40.0
-
-[node name="Label" type="Label" parent="Player/Camera2D/Panel"]
-margin_left = 334.0
-margin_top = 13.0
-margin_right = 425.0
-margin_bottom = 27.0
-text = "Flock Feeding:"
-
-[node name="ProgressBar" type="ProgressBar" parent="Player/Camera2D/Panel"]
-margin_left = 429.0
-margin_top = 13.0
-margin_right = 629.0
-margin_bottom = 27.0
-rect_min_size = Vector2( 200, 0 )
-size_flags_vertical = 4
-max_value = 1.0
-script = SubResource( 14 )
-
-[node name="Sprite" type="Sprite" parent="Player"]
-position = Vector2( -2, 153 )
-scale = Vector2( 2, 2 )
-texture = ExtResource( 3 )
-
-[node name="Viewport" type="Viewport" parent="."]
-size = Vector2( 640, 360 )
-transparent_bg = true
-handle_input_locally = false
-usage = 3
-render_target_v_flip = true
-render_target_update_mode = 3
-
-[node name="Objects3D" parent="Viewport" instance=ExtResource( 14 )]
-camera = NodePath("../../Player/Camera2D")
-
-[connection signal="toggled" from="Player/Camera2D/Panel/ButtonDebug" to="." method="_on_ButtonDebug_toggled"]
-[connection signal="toggled" from="Player/Camera2D/Panel/ButtonBoidsSettings" to="Player/Camera2D/Panel" method="_on_ButtonBoidsSettings_toggled"]
+[connection signal="toggled" from="CameraSpace/Panel/ButtonDebug" to="." method="_on_ButtonDebug_toggled"]
+[connection signal="toggled" from="CameraSpace/Panel/ButtonBoidsSettings" to="CameraSpace/Panel" method="_on_ButtonBoidsSettings_toggled"]

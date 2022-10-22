@@ -18,8 +18,9 @@ func _process(delta):
         var node_pos_on_grid = node.position * _spec.grid_resolution
         var diff = (node_pos_on_grid - sprite.position) / delta
         var rg = _spec.velocity_to_rg(diff);
-        sprite.self_modulate.r = rg.r
-        sprite.self_modulate.g = rg.g
+        if sprite.self_modulate.b == 1.0:
+            sprite.self_modulate.r = rg.r
+            sprite.self_modulate.g = rg.g
         sprite.position = node_pos_on_grid
 
 func add_external_agent(node : Node2D, radius : float, isFriend : bool):
