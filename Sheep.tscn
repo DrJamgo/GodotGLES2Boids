@@ -22,7 +22,7 @@ func _ready():
     var boids_spec : BoidsSpec = $BoidsInstance.boids_spec
     
     $Player.position = $Spawn.position
-    $BoidsInstance.add_boids_with_spread($Spawn.position, 20, ($Spawn.shape as RectangleShape2D).extents)
+    $BoidsInstance.add_boids_with_spread($Spawn.position, 50, ($Spawn.shape as RectangleShape2D).extents)
 
     $BoidsInstance.static_grid = $Viewport2.get_texture()
     $Viewport2.size = $BoidsInstance.boids_spec.grid_size
