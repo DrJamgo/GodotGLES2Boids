@@ -9,7 +9,7 @@ var rect : Rect2
 
 func _draw():
     #draw_rect(rect, Color(1,1,1,0.3), false, 1.0)
-    draw_arc(Vector2(0,0), 16.0, -PI, -PI + 2.0 * PI * _finish_delay, 40, Color(1,1,1,0.5), 4.0)
+    draw_arc(Vector2(0,0), 16.0, -PI, -PI + 2.0 * PI * _finish_delay, 32, Color(1,1,1,0.75), 4.0)
 
 func _physics_process(delta):
     var boids := (get_node(boids_instance) as BoidsInstance)
