@@ -25,7 +25,7 @@ func _add_gras_instances(tilemap : TileMap):
         transform.origin = world_3d
 
         mesh.set_instance_transform(index, transform)
-        mesh.set_instance_custom_data(index, Color(UV.x, UV.y, 0, 0))
+        mesh.set_instance_custom_data(index, Color(UV.x, UV.y, 0, float(index)))
         index += 1
 
 func _ready():
