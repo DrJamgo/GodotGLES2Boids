@@ -1,5 +1,8 @@
 extends MultiMeshInstance
 
+export(NodePath) var boids_instance
+onready var _boids := get_node(boids_instance) as BoidsInstance
+
 var rng := RandomNumberGenerator.new()
 
 func _add_gras_instances(tilemap : TileMap):
@@ -16,6 +19,8 @@ func _add_gras_instances(tilemap : TileMap):
         var coordinate := (c as Vector2)
         var world : Vector2 = tilemap.map_to_world(coordinate) + tilemap.cell_size / 2.0
         var world_3d : Vector3 = Vector3(world.x, 0, world.y)
+        
+        var grid = _boids.boids_spec.world_to_grid(world + Vector2(0,tilemap.cell_size.y / 2.0)) / _boids.boids_spec.grid_size
 
         world_3d.x += rng.randi_range(-3, 3)
         world_3d.z += rng.randi_range(-6, 6)
@@ -25,7 +30,7 @@ func _add_gras_instances(tilemap : TileMap):
         transform.origin = world_3d
 
         mesh.set_instance_transform(index, transform)
-        mesh.set_instance_custom_data(index, Color(UV.x, UV.y, 0, float(index)))
+        mesh.set_instance_custom_data(index, Color(UV.x, UV.y, grid.x, 1.0-grid.y))
         index += 1
 
 func _ready():
@@ -33,3 +38,6 @@ func _ready():
     for tilemap in get_tree().get_nodes_in_group("tilemap_3d"):
         _add_gras_instances(tilemap)
         tilemap.visible = false
+
+func _process(delta):
+    (material_override as ShaderMaterial).set_shader_param("dynamic_grid", _boids.dynamic_grid)

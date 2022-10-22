@@ -21,6 +21,9 @@ func _process(delta):
         if sprite.self_modulate.b == 1.0:
             sprite.self_modulate.r = rg.r
             sprite.self_modulate.g = rg.g
+        else:
+            sprite.self_modulate.r = 0.5
+            sprite.self_modulate.g = 0.5
         sprite.position = node_pos_on_grid
 
 func add_external_agent(node : Node2D, radius : float, isFriend : bool):

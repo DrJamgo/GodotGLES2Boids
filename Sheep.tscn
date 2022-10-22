@@ -37,6 +37,7 @@ func _ready():
     
     $BoidsInstance.add_external_agent($Player, 16, true)
     $BoidsInstance.add_external_agent($Doggo, 48, false)
+    $BoidsInstance.add_external_agent($Doggo, 12, true)
     
     var map = $TileMap
     var rect = map.get_used_rect()
@@ -207,13 +208,15 @@ shader_type spatial;
 render_mode depth_draw_opaque,unshaded;
 uniform vec4 albedo : hint_color;
 uniform sampler2D texture_albedo : hint_albedo;
+uniform sampler2D dynamic_grid;
 uniform vec3 uv1_scale;
 uniform vec3 uv1_offset;
 uniform vec3 uv2_scale;
 uniform vec3 uv2_offset;
 
 void vertex() {
-	VERTEX.x += sin(TIME + INSTANCE_CUSTOM.a) * (1.0-UV.y) * 4.0;
+    vec4 dynamic = texture(dynamic_grid, INSTANCE_CUSTOM.ba);
+	VERTEX.xz += (dynamic.rg-vec2(0.5,0.5)) * (1.0-UV.y) * 64.0;
     UV=UV*uv1_scale.xy+INSTANCE_CUSTOM.xy;
 }
 
@@ -242,6 +245,7 @@ shader_param/texture_albedo = SubResource( 29 )
 size = Vector2( 32, 32 )
 
 [sub_resource type="MultiMesh" id=28]
+color_format = 2
 transform_format = 1
 custom_data_format = 2
 mesh = SubResource( 27 )
@@ -367,7 +371,7 @@ max_value = 1.0
 script = SubResource( 14 )
 
 [node name="Logo" type="Sprite" parent="CameraSpace"]
-position = Vector2( 2, 155 )
+position = Vector2( 0, 155 )
 scale = Vector2( 2, 2 )
 texture = ExtResource( 3 )
 
@@ -450,16 +454,6 @@ limit_left = 0
 limit_top = 0
 smoothing_speed = 1.0
 
-[node name="Viewport2" type="Viewport" parent="."]
-size = Vector2( 2, 2 )
-transparent_bg = true
-disable_3d = true
-usage = 0
-render_target_update_mode = 1
-
-[node name="StaticGridRenderer" type="Node2D" parent="Viewport2"]
-script = ExtResource( 2 )
-
 [node name="Viewport" type="Viewport" parent="."]
 size = Vector2( 640, 360 )
 transparent_bg = true
@@ -476,6 +470,17 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, -1, 1, 0, 12, 0 )
 material_override = SubResource( 33 )
 multimesh = SubResource( 28 )
 script = ExtResource( 13 )
+boids_instance = NodePath("../../BoidsInstance")
+
+[node name="Viewport2" type="Viewport" parent="."]
+size = Vector2( 2, 2 )
+transparent_bg = true
+disable_3d = true
+usage = 0
+render_target_update_mode = 1
+
+[node name="StaticGridRenderer" type="Node2D" parent="Viewport2"]
+script = ExtResource( 2 )
 
 [connection signal="toggled" from="CameraSpace/Panel/ButtonDebug" to="." method="_on_ButtonDebug_toggled"]
 [connection signal="toggled" from="CameraSpace/Panel/ButtonBoidsSettings" to="CameraSpace/Panel" method="_on_ButtonBoidsSettings_toggled"]
