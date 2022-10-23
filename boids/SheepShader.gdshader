@@ -171,19 +171,33 @@ void fragment() {
             }
             
             // process eating and hunger
-            bool eating_phase = mod(hunger * 16.0, 2.0) > 1.0;
-            
+            const float NUM_PHASES = 8.0;
+            bool eating_phase = mod(hunger * NUM_PHASES, 2.0) > 1.0;
+            bool eating = false;
             if(eating_phase) {
-                if(negative < 0.01 && texture(static_grid, world_to_grid(pos)).g > 0.0) {
-                    velocity = vec2(0,0);
-                    COLOR.a += delta_time / 2.0 / 4.0 * choas_func(UV.x+TIME);
+                if(negative < 0.5 && texture(static_grid, world_to_grid(pos)).g > 0.0) {
+                    eating = true;
+                    COLOR.a += delta_time / NUM_PHASES * choas_func(UV.x+TIME);
                 }
             }
             else {
                 COLOR.a += delta_time * choas_func(UV.x+TIME) / 2.0 / 2.0;
             }
             
-            COLOR.rg = velocity_to_rg(velocity);
+            const float VELOCITY_CHANGE_RATE = 0.5; // < max_velocity per second
+            
+            if(eating) {
+                COLOR.rg = velocity_to_rg(vec2(0,0));
+            }
+            else {
+                vec2 new_rg = velocity_to_rg(velocity);
+                vec2 diff = new_rg - COLOR.rg;
+                float change_limit = delta_time * VELOCITY_CHANGE_RATE;
+                if(length(diff) > change_limit) {
+                    diff = normalize(diff) * change_limit;
+                    COLOR.rg += diff;
+                }
+            }
             COLOR.b = mod(length(velocity) * delta_time / 8.0 + COLOR.b, 1.0);
         }
     }

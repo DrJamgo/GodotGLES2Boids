@@ -112,7 +112,7 @@ script = ExtResource( 8 )
 [node name="ColorRect" type="ColorRect" parent="BoidsGrid"]
 margin_right = 40.0
 margin_bottom = 40.0
-color = Color( 0.498039, 0.498039, 0.498039, 0.196078 )
+color = Color( 0.498039, 0.498039, 0.498039, 1 )
 
 [node name="GridMultiMesh" type="MultiMeshInstance2D" parent="BoidsGrid"]
 material = SubResource( 7 )
