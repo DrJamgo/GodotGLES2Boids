@@ -22,8 +22,8 @@ func _add_gras_instances(tilemap : TileMap):
         
         var grid = _boids.boids_spec.world_to_grid(world + Vector2(0,tilemap.cell_size.y / 2.0)) / _boids.boids_spec.grid_size
 
-        world_3d.x += rng.randi_range(-3, 3)
-        world_3d.z += rng.randi_range(-6, 6)
+        world_3d.x += rng.randi_range(-2, 2)
+        world_3d.z += rng.randi_range(-8, 8)
         world_3d.y += rng.randi_range(-2, 2)
         var transform := Transform.IDENTITY
         transform = transform.rotated(Vector3(0,1,0), rng.randf_range(-PI*0.1, PI*0.1))
