@@ -27,12 +27,14 @@ vec2 rgba_to_world(in vec4 color)
     return vector;
 }
 
+const float jumpiness = 3.0;
+
 void vertex() {
     VERTEX.xz += rgba_to_world(texture(state_texture, INSTANCE_CUSTOM.xy));
     vec4 color2 = texture(state_texture, INSTANCE_CUSTOM.xy - vec2(0,0.5));
     velocity = rg_to_velocity(color2.rg);
     eating = color2.a;
-    VERTEX.z += sin(color2.b * 2.0 * PI) * (length(velocity) / velocity_max) * 2.0;
+    VERTEX.z += abs(sin(color2.b * 2.0 * PI)) * (length(velocity) / velocity_max) * jumpiness;
     VERTEX.xyz = round(VERTEX.xyz);
 }
 

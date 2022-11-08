@@ -198,7 +198,7 @@ void fragment() {
                     COLOR.rg += diff;
                 }
             }
-            COLOR.b = mod(length(velocity) * delta_time / 8.0 + COLOR.b, 1.0);
+            COLOR.b = mod(length(velocity) * delta_time / 16.0 + COLOR.b, 1.0);
         }
     }
 }
