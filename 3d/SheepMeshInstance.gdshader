@@ -32,7 +32,7 @@ void vertex() {
     vec4 color2 = texture(state_texture, INSTANCE_CUSTOM.xy - vec2(0,0.5));
     velocity = rg_to_velocity(color2.rg);
     eating = color2.a;
-    VERTEX.y += sin(color2.b * 2.0 * PI) * (length(velocity) / velocity_max) * 2.0;
+    VERTEX.z += sin(color2.b * 2.0 * PI) * (length(velocity) / velocity_max) * 2.0;
     VERTEX.xyz = round(VERTEX.xyz);
 }
 
