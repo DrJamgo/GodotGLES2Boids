@@ -9,11 +9,6 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Sprite",
-"class": "AightFrameSprite",
-"language": "GDScript",
-"path": "res://8FrameSprite.gd"
-}, {
 "base": "Sprite3D",
 "class": "AightFrameSprite3D",
 "language": "GDScript",
@@ -35,7 +30,6 @@ _global_script_classes=[ {
 "path": "res://boids/BoidsSpec.gd"
 } ]
 _global_script_class_icons={
-"AightFrameSprite": "",
 "AightFrameSprite3D": "",
 "BoidsInstance": "",
 "BoidsMultimeshInstance2D": "",

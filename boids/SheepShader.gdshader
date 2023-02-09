@@ -18,7 +18,7 @@ uniform float rule_cohesion = 5.0;
 uniform float rule_alignment = 1.0;
 uniform float rule_target = 1.0;
 uniform float rule_attraction = 1.0;
-uniform float rule_colision = 100.0;
+uniform float rule_colision = 500.0;
 uniform vec3  target = vec3(0,0,0); // active if Z > 0
 
 uniform float velocity_min = 20.0;
@@ -95,7 +95,6 @@ void fragment() {
         }
         // velocity
         else {
-            float self = texture(dynamic_grid, world_to_grid(pos)).a;
             vec2 gradient = vec2(0.0,0.0);
             vec2 repulsion = vec2(0.0,0.0);
             vec2 density  = vec2(0.0,0.0);
@@ -184,7 +183,7 @@ void fragment() {
                 COLOR.a += delta_time * choas_func(UV.x+TIME) / 2.0 / 2.0;
             }
             
-            const float VELOCITY_CHANGE_RATE = 0.5; // < max_velocity per second
+            const float VELOCITY_CHANGE_RATE = 2.0; // < max_velocity per second
             
             if(eating) {
                 COLOR.rg = velocity_to_rg(vec2(0,0));

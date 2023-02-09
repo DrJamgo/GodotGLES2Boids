@@ -4,6 +4,7 @@ https://www.thesaurus.com/browse/flock
 https://idioms.thefreedictionary.com/flock
 
 ## Rules
+From: https://www.reddit.com/r/gamedev/comments/e9bi1r/how_to_name_your_game/
 ### Must Have
 - Easy to pronounce 
 - Not too long or short
@@ -22,6 +23,10 @@ https://idioms.thefreedictionary.com/flock
 
 ## Ideas
 - FLOCK (taken)
-- my FLOCK
-- Dont stray from the flock
+- my FLOCK, iFLOCK
+- Dont stray from the flock, don't stray
 - FLOCK together
+- Lone FLOCK
+
+## Collection
+baa, bleat, lone wolf
