@@ -1,15 +1,17 @@
 shader_type spatial;
-render_mode world_vertex_coords, cull_disabled, depth_draw_always, unshaded;
+render_mode world_vertex_coords, cull_disabled, depth_draw_alpha_prepass, unshaded;
 
 uniform sampler2D state_texture;
 uniform vec2 grid_size;
 uniform vec2 world_size;
 uniform float velocity_max;
+uniform vec2 tile_size;
 
 uniform sampler2D tex;
 
 varying vec2 velocity;
 varying float eating;
+varying float variant;
 
 const vec2 velocity_OFFSET = vec2(127.0 / 255.0, 127.0 / 255.0);
 const float PI = 3.14159;
@@ -36,12 +38,13 @@ void vertex() {
     eating = color2.a;
     VERTEX.z += abs(sin(color2.b * 2.0 * PI)) * (length(velocity) / velocity_max) * jumpiness;
     VERTEX.xyz = round(VERTEX.xyz);
+    
+    variant = INSTANCE_CUSTOM.b;
 }
 
 void fragment() {
     
     vec2 uv = UV;
-    uv.x /= 9.0;
     float frame = 0.0;
     if(length(velocity) > 0.0) {
         float angle = atan(velocity.y, velocity.x) + PI;
@@ -50,7 +53,9 @@ void fragment() {
     else {
         frame = 8.0;
     }
-    uv.x += frame / 9.0;
+    uv.x += frame;
+    uv.y += float(round((1.0 - eating) * (tile_size.y-1.0) + 0.499));
+    uv /= tile_size;
 
     vec4 color = texture(tex, uv);
     if (color.a == 0.0)

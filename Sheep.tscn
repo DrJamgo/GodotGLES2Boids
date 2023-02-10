@@ -664,5 +664,8 @@ render_target_update_mode = 1
 [node name="StaticGridRenderer" type="Node2D" parent="Viewport2"]
 script = ExtResource( 2 )
 
+[node name="Light2D" type="Light2D" parent="."]
+position = Vector2( 419, 210 )
+
 [connection signal="toggled" from="CameraSpace/Panel/ButtonDebug" to="." method="_on_ButtonDebug_toggled"]
 [connection signal="toggled" from="CameraSpace/Panel/ButtonBoidsSettings" to="CameraSpace/Panel" method="_on_ButtonBoidsSettings_toggled"]

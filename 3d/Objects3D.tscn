@@ -10,6 +10,7 @@ shader = ExtResource( 3 )
 shader_param/grid_size = null
 shader_param/world_size = null
 shader_param/velocity_max = null
+shader_param/tile_size = null
 shader_param/tex = ExtResource( 4 )
 
 [sub_resource type="QuadMesh" id=17]
@@ -26,6 +27,7 @@ script = ExtResource( 5 )
 [node name="MultiMeshInstance" type="MultiMeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, -1, 1, 0, 12, 0 )
 material_override = SubResource( 20 )
+cast_shadow = 0
 multimesh = SubResource( 18 )
 script = ExtResource( 1 )
 boids_instance_path = NodePath("../../../BoidsInstance")
