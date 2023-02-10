@@ -8,7 +8,7 @@ var _spec : BoidsSpec
 
 func setup(spec : BoidsSpec, particles_texture : ViewportTexture):
     _spec = spec.duplicate()
-    _spec.boids_vision = 50.0
+    _spec.boids_vision = 64.0
     
     $GridMultiMesh.setup(_spec, particles_texture)
     

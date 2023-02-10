@@ -29,7 +29,7 @@ void vertex() {
 
 void fragment(){
     COLOR = texture(TEXTURE, UV);
-    COLOR.a = sqrt(COLOR.a) * eating * 2.0;
+    COLOR.a = sqrt(COLOR.a) * eating * 1.0;
     
     //COLOR.a *= 4.0;
     //COLOR.a = round(COLOR.a);

@@ -667,7 +667,8 @@ material = SubResource( 59 )
 position = Vector2( 419, 210 )
 scale = Vector2( 1, -1 )
 texture = ExtResource( 17 )
-color = Color( 0.870588, 0.792157, 0.329412, 1 )
+color = Color( 0.945098, 0.890196, 0.552941, 1 )
+energy = 1.2
 
 [connection signal="toggled" from="CameraSpace/Panel/ButtonDebug" to="." method="_on_ButtonDebug_toggled"]
 [connection signal="toggled" from="CameraSpace/Panel/ButtonBoidsSettings" to="CameraSpace/Panel" method="_on_ButtonBoidsSettings_toggled"]
