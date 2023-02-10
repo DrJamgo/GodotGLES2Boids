@@ -170,7 +170,7 @@ void fragment() {
             }
             
             // process eating and hunger
-            const float NUM_PHASES = 8.0;
+            const float NUM_PHASES = 4.0;
             bool eating_phase = mod(hunger * NUM_PHASES, 2.0) > 1.0;
             bool eating = false;
             if(eating_phase) {
