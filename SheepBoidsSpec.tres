@@ -1,0 +1,21 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://boids/BoidsSpec.gd" type="Script" id=1]
+
+[resource]
+resource_local_to_scene = true
+script = ExtResource( 1 )
+world_size = Vector2( 1280, 720 )
+velocity_min = 20.0
+velocity_max = 50.0
+grid_resolution = 0.5
+boids_capacity = 200
+boids_size = 5.0
+boids_vision = 20.0
+rule_cohesion = 100.0
+rule_seperation = 200.0
+rule_alignment = 1.0
+rule_target = 0.3
+rule_colision = 500.0
+grid_power = 1.5
+seperation_power = 1.5

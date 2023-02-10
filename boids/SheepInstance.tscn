@@ -1,0 +1,79 @@
+[gd_scene load_steps=14 format=2]
+
+[ext_resource path="res://boids/LightmapShader.gdshader" type="Shader" id=1]
+[ext_resource path="res://boids/GridMultiMesh.gd" type="Script" id=2]
+[ext_resource path="res://boids/radial_gradient.png" type="Texture" id=3]
+[ext_resource path="res://boids/BoidsInstance.tscn" type="PackedScene" id=4]
+[ext_resource path="res://boids/LightMapVp.gd" type="Script" id=5]
+[ext_resource path="res://boids/SheepInstance.gd" type="Script" id=6]
+[ext_resource path="res://boids/SheepShader.gdshader" type="Shader" id=7]
+[ext_resource path="res://boids/GridShader.gdshader" type="Shader" id=8]
+
+[sub_resource type="ShaderMaterial" id=9]
+resource_local_to_scene = true
+shader = ExtResource( 8 )
+shader_param/grid_size = null
+shader_param/world_size = null
+shader_param/vision_size_factor = null
+shader_param/grid_power = null
+
+[sub_resource type="ShaderMaterial" id=10]
+resource_local_to_scene = true
+shader = ExtResource( 7 )
+shader_param/world_size = null
+shader_param/grid_size = null
+shader_param/delta_time = 0.0
+shader_param/boids_vision = null
+shader_param/boids_size = null
+shader_param/seperation_power = null
+shader_param/rule_seperation = 100.0
+shader_param/rule_cohesion = 5.0
+shader_param/rule_alignment = 0.5
+shader_param/rule_target = 1.0
+shader_param/rule_attraction = 1.0
+shader_param/rule_colision = 100.0
+shader_param/target = Vector3( 0, 0, 0 )
+shader_param/velocity_min = 20.0
+shader_param/velocity_max = 50.0
+
+[sub_resource type="ShaderMaterial" id=7]
+resource_local_to_scene = true
+shader = ExtResource( 1 )
+shader_param/grid_size = null
+shader_param/world_size = null
+shader_param/vision_size_factor = null
+shader_param/grid_power = null
+
+[sub_resource type="QuadMesh" id=2]
+size = Vector2( 32, 32 )
+
+[sub_resource type="MultiMesh" id=3]
+custom_data_format = 2
+mesh = SubResource( 2 )
+
+[node name="BoidsInstance" instance=ExtResource( 4 )]
+script = ExtResource( 6 )
+
+[node name="GridMultiMesh" parent="BoidsGrid" index="1"]
+material = SubResource( 9 )
+
+[node name="BoidsProcesor" parent="BoidsParticles" index="0"]
+material = SubResource( 10 )
+
+[node name="LightMapVP" type="Viewport" parent="." index="4"]
+size = Vector2( 8, 8 )
+transparent_bg = true
+handle_input_locally = false
+hdr = false
+disable_3d = true
+usage = 1
+render_target_update_mode = 3
+script = ExtResource( 5 )
+
+[node name="GridMultiMesh" type="MultiMeshInstance2D" parent="LightMapVP" index="0"]
+material = SubResource( 7 )
+multimesh = SubResource( 3 )
+texture = ExtResource( 3 )
+script = ExtResource( 2 )
+
+[connection signal="boids_count_changed" from="." to="LightMapVP/GridMultiMesh" method="_on_BoidsInstance_boids_count_changed"]

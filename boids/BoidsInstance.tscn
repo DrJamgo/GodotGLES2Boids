@@ -1,35 +1,16 @@
-[gd_scene load_steps=22 format=2]
+[gd_scene load_steps=20 format=2]
 
 [ext_resource path="res://boids/GridMultiMesh.gd" type="Script" id=1]
 [ext_resource path="res://boids/BoidsParticles.gd" type="Script" id=2]
-[ext_resource path="res://boids/BoidsSpec.gd" type="Script" id=3]
+[ext_resource path="res://boids/BoidsGrid.gd" type="Script" id=3]
 [ext_resource path="res://boids/radial_gradient.png" type="Texture" id=4]
 [ext_resource path="res://boids/CopyShader.gdshader" type="Shader" id=5]
-[ext_resource path="res://boids/GridShader.gdshader" type="Shader" id=6]
+[ext_resource path="res://boids/LightmapShader.gdshader" type="Shader" id=6]
 [ext_resource path="res://boids/SheepShader.gdshader" type="Shader" id=7]
-[ext_resource path="res://boids/BoidsGrid.gd" type="Script" id=8]
 [ext_resource path="res://boids/BoidsProcessor.gd" type="Script" id=9]
 [ext_resource path="res://boids/BoidsInstance.gd" type="Script" id=10]
 [ext_resource path="res://boids/Aggregator.gd" type="Script" id=11]
 [ext_resource path="res://boids/AggregationShader.tres" type="Shader" id=12]
-
-[sub_resource type="Resource" id=23]
-resource_local_to_scene = true
-script = ExtResource( 3 )
-world_size = Vector2( 1000, 1000 )
-velocity_min = 30.0
-velocity_max = 100.0
-grid_resolution = 1.0
-boids_capacity = 16384
-boids_size = 10.0
-boids_vision = 40.0
-rule_cohesion = 50.0
-rule_seperation = 400.0
-rule_alignment = 1.3
-rule_target = 5.0
-rule_colision = 100.0
-grid_power = 1.5
-seperation_power = 1.5
 
 [sub_resource type="ShaderMaterial" id=24]
 shader = ExtResource( 12 )
@@ -83,7 +64,6 @@ shader = ExtResource( 5 )
 
 [node name="BoidsInstance" type="Node"]
 script = ExtResource( 10 )
-boids_spec = SubResource( 23 )
 
 [node name="Aggregator" type="Viewport" parent="."]
 size = Vector2( 4, 2 )
@@ -107,7 +87,7 @@ disable_3d = true
 usage = 1
 render_target_clear_mode = 1
 render_target_update_mode = 3
-script = ExtResource( 8 )
+script = ExtResource( 3 )
 
 [node name="ColorRect" type="ColorRect" parent="BoidsGrid"]
 margin_right = 40.0

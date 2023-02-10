@@ -28,12 +28,18 @@ _global_script_classes=[ {
 "class": "BoidsSpec",
 "language": "GDScript",
 "path": "res://boids/BoidsSpec.gd"
+}, {
+"base": "BoidsInstance",
+"class": "SheepInstance",
+"language": "GDScript",
+"path": "res://boids/SheepInstance.gd"
 } ]
 _global_script_class_icons={
 "AightFrameSprite3D": "",
 "BoidsInstance": "",
 "BoidsMultimeshInstance2D": "",
-"BoidsSpec": ""
+"BoidsSpec": "",
+"SheepInstance": ""
 }
 
 [application]
