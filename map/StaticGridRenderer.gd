@@ -45,16 +45,20 @@ func _draw_colision_shapes(tilemap : TileMap):
                         colors.append(colision_color)
                     draw_polygon(world_points, colors)
 
+const list_of_food_tiles := ["Flower1", "Flower2", "Shroom1"]
+
 func _draw_food_tiles(tilemap : TileMap, color : Color):
     print(" - " + tilemap.name)
     var tileset : TileSet = tilemap.tile_set
-    var index_flowers = tileset.find_tile_by_name("Flowers")
-    
-    for c in tilemap.get_used_cells_by_id(index_flowers):
-        var coordinate := (c as Vector2)
-        var world : Vector2 = tilemap.map_to_world(coordinate)
-        var rect = Rect2(world * boids_spec.grid_resolution, tilemap.cell_size * boids_spec.grid_resolution) 
-        draw_rect(rect, food_color)
+    for tilename in list_of_food_tiles:
+        var index_flowers = tileset.find_tile_by_name(tilename)
+        
+        for c in tilemap.get_used_cells_by_id(index_flowers):
+            var coordinate := (c as Vector2)
+            var world : Vector2 = tilemap.map_to_world(coordinate)
+            var rect = Rect2(world * boids_spec.grid_resolution, tilemap.cell_size * boids_spec.grid_resolution)
+            rect.position.y += 3
+            draw_rect(rect, food_color)
 
 const outline_width = 2.0
 
